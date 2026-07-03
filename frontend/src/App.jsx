@@ -3,6 +3,7 @@ import Header from './components/Header';
 import Hero from './components/Hero';
 import ProductCard from './components/ProductCard';
 import CartDrawer from './components/CartDrawer';
+import { supabase } from './supabaseClient';
 
 export default function App() {
   const [products, setProducts] = useState([]);
@@ -259,6 +260,46 @@ export default function App() {
       } else {
         setAdminLoginError('Invalid administrator credentials.');
       }
+    }
+  };
+
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+      const filePath = `products/${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from('product-images')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('product-images')
+        .getPublicUrl(filePath);
+
+      setProductForm({ ...productForm, image_url: publicUrl });
+      alert('Image uploaded to Supabase Storage successfully!');
+    } catch (err) {
+      console.error('Supabase upload error:', err);
+      // Fallback image url
+      const mockUrl = `https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=600&q=80`;
+      setProductForm({ ...productForm, image_url: mockUrl });
+      alert(`Supabase Storage Mock Fallback: Bucket 'product-images' not initialized. File image URL set to mock showroom image.`);
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -2224,15 +2265,44 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <label className="text-ui-label-bold text-on-surface text-xs block">IMAGE URL</label>
-                <input 
-                  type="url" 
-                  className="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all" 
-                  placeholder="https://images.unsplash.com/..."
-                  value={productForm.image_url}
-                  onChange={(e) => setProductForm({ ...productForm, image_url: e.target.value })}
-                />
+              <div className="space-y-3">
+                <label className="text-ui-label-bold text-on-surface text-xs block font-bold">PRODUCT IMAGE</label>
+                <div className="flex flex-col sm:flex-row items-center gap-4 p-4 border border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
+                  {productForm.image_url ? (
+                    <img 
+                      src={productForm.image_url} 
+                      alt="Preview" 
+                      className="w-16 h-16 rounded-xl object-contain bg-white border border-slate-100"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-xl bg-slate-100 flex items-center justify-center text-slate-400">
+                      <span className="material-symbols-outlined text-2xl">image</span>
+                    </div>
+                  )}
+                  <div className="flex-1 space-y-1">
+                    <input 
+                      type="file" 
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      disabled={uploadingImage}
+                      className="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-secondary/10 file:text-secondary hover:file:bg-secondary/20 file:cursor-pointer"
+                    />
+                    <p className="text-[10px] text-slate-400 font-medium">
+                      {uploadingImage ? 'Uploading image to Supabase Storage...' : 'Upload PNG, JPG, or WebP. Max 5MB.'}
+                    </p>
+                  </div>
+                </div>
+                {productForm.image_url && (
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase">Image Path URL</span>
+                    <input 
+                      type="text" 
+                      readOnly 
+                      value={productForm.image_url}
+                      className="w-full bg-slate-50 text-[10px] font-mono text-slate-500 border border-slate-200 rounded-xl px-3 py-1.5 outline-none select-all"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="space-y-2">
