@@ -250,3 +250,9 @@ body {
   font-weight: 800;
   color: #0f172a;
 }
+
+/* Ensure the admin panel uses only the UI sans-serif font for all elements */
+.admin-font-override, 
+.admin-font-override * {
+  font-family: var(--font-ui) !important;
+}
