@@ -3,6 +3,158 @@ import uuid
 
 api_bp = Blueprint("api", __name__)
 
+import datetime
+
+# Default Website Content Settings
+DEFAULT_SETTINGS = {
+    "announcement": {
+        "enabled": True,
+        "text": "Festive Upgrade Sale: Get up to 10% instant discount + No-Cost EMI up to 24 months!",
+        "link": "#offers"
+    },
+    "hero": {
+        "title": "Smart Tech.",
+        "highlight": "Modern Living.",
+        "subtitle": "Curated smartphones and premium smart appliances designed to elevate your home.",
+        "cta1_text": "Explore Products",
+        "cta1_link": "#products-section",
+        "cta2_text": "Contact Us",
+        "cta2_link": "#contact",
+        "bg_image_url": "/images/hero-bg.png"
+    },
+    "about": {
+        "title": "Redefining the Electronics Shopping Experience",
+        "subtitle": "Certified premium retail destinations since 2012.",
+        "description": "At Aone Digital, we bring you genuine global brands with expert support, flexible financing, and rapid home setups."
+    },
+    "footer": {
+        "copyright": "© 2026 Aone Digital. All rights reserved.",
+        "developed_by": "Designed & Developed by Bharath Kumar",
+        "email": "support@aonedigital.in",
+        "phone": "+91 7975774472",
+        "whatsapp": "+91 8453036381",
+        "address": "Luxury Square, Tech City",
+        "admin_email": "bharath.kumar@aonedigital.in"
+    },
+    "theme": {
+        "primary": "#f9f9ff",
+        "onPrimary": "#141b2b",
+        "secondary": "#002d62",
+        "borderRadius": "24px",
+        "darkMode": False
+    },
+    "seo": {
+        "title": "Aone Digital India - Premium Phones & Home Appliances",
+        "description": "Authorized premium smartphones, laptops, smart TVs and refrigerators with full warranty, fast shipping and easy EMI at Aone Digital.",
+        "keywords": "mobiles, laptops, refrigerators, smart tv, no cost emi, Bangalore, electronics store"
+    }
+}
+
+MOCK_LEADS = [
+    {
+        "id": "lead-1",
+        "name": "Amit Sharma",
+        "email": "amit.sharma@gmail.com",
+        "phone": "+91 98765 43210",
+        "category": "Smartphones",
+        "budget": "₹30,000 - ₹70,000",
+        "notes": "Interested in iPhone 15 Pro Max exchange offer. Wants Bajaj EMI.",
+        "status": "new",
+        "created_at": "2026-07-03T10:15:30Z"
+    },
+    {
+        "id": "lead-2",
+        "name": "Priyanka Sen",
+        "email": "priyanka.s@yahoo.com",
+        "phone": "+91 99112 23344",
+        "category": "Home Appliances",
+        "budget": "₹70,000 - ₹1,50,000",
+        "notes": "Looking for Smart French Door Refrigerator. Scheduled demo for Saturday.",
+        "status": "contacted",
+        "created_at": "2026-07-02T14:30:12Z"
+    },
+    {
+        "id": "lead-3",
+        "name": "Vikram Rathore",
+        "email": "vikram.rathore@outlook.com",
+        "phone": "+91 88776 65544",
+        "category": "Laptops",
+        "budget": "₹1,50,000+",
+        "notes": "Purchased MacBook Pro. Offer discount applied. Won.",
+        "status": "won",
+        "created_at": "2026-06-30T09:40:22Z"
+    }
+]
+
+MOCK_MEDIA = [
+    {
+        "id": "media-1",
+        "name": "logo.png",
+        "url": "/images/logo.png",
+        "size": "45 KB",
+        "file_type": "image/png",
+        "created_at": "2026-07-03T08:00:00Z"
+    },
+    {
+        "id": "media-2",
+        "name": "hero-bg.png",
+        "url": "/images/hero-bg.png",
+        "size": "890 KB",
+        "file_type": "image/png",
+        "created_at": "2026-07-03T08:05:00Z"
+    },
+    {
+        "id": "media-3",
+        "name": "Icon.png",
+        "url": "/images/Icon.png",
+        "size": "12 KB",
+        "file_type": "image/png",
+        "created_at": "2026-07-03T08:02:00Z"
+    }
+]
+
+MOCK_USERS = [
+    {
+        "id": "user-1",
+        "username": "Bharath",
+        "role": "Super Admin",
+        "email": "bharath.kumar@aonedigital.in"
+    },
+    {
+        "id": "user-2",
+        "username": "Ramesh",
+        "role": "Store Manager",
+        "email": "ramesh@aonedigital.in"
+    },
+    {
+        "id": "user-3",
+        "username": "Divya",
+        "role": "Content Editor",
+        "email": "divya@aonedigital.in"
+    }
+]
+
+MOCK_AUDIT_LOGS = [
+    {
+        "id": "log-1",
+        "user": "Bharath",
+        "action": "Updated hero section headline to 'Smart Tech. Modern Living.'",
+        "timestamp": "2026-07-03T13:40:00Z"
+    },
+    {
+        "id": "log-2",
+        "user": "Ramesh",
+        "action": "Updated stock count of iPhone 15 Pro Max to 25 units",
+        "timestamp": "2026-07-03T12:30:15Z"
+    },
+    {
+        "id": "log-3",
+        "user": "Divya",
+        "action": "Added Dyson Cyclonic Robot Vacuum to catalog",
+        "timestamp": "2026-07-03T11:15:42Z"
+    }
+]
+
 # Fallback Mock Data in case Supabase is not yet configured or populated
 MOCK_PRODUCTS = [
     {
@@ -184,9 +336,23 @@ def contact():
     if not data or not data.get("email"):
         return jsonify({"error": "Email is required"}), 400
         
+    new_lead = {
+        "id": f"lead-{uuid.uuid4()}",
+        "name": data.get("name") or "Anonymous Subscriber",
+        "email": data.get("email"),
+        "phone": data.get("phone") or "N/A",
+        "category": data.get("category") or "Newsletter Signup",
+        "budget": data.get("budget") or "N/A",
+        "notes": "Submitted contact/lead request from storefront portal.",
+        "status": "new",
+        "created_at": datetime.datetime.utcnow().isoformat() + "Z"
+    }
+    MOCK_LEADS.insert(0, new_lead)
+    
     return jsonify({
         "message": f"Thank you for reaching out! We will reply to {data.get('email')} soon.",
-        "status": "success"
+        "status": "success",
+        "lead_id": new_lead["id"]
     }), 200
 
 @api_bp.route("/products", methods=["POST"])
@@ -209,6 +375,15 @@ def add_product():
         "featured": bool(data.get("featured", False))
     }
 
+    # Add audit log entry
+    user_header = request.headers.get("X-Admin-User", "System")
+    MOCK_AUDIT_LOGS.insert(0, {
+        "id": f"log-{uuid.uuid4()}",
+        "user": user_header,
+        "action": f"Added product: '{new_product['name']}' to catalog",
+        "timestamp": datetime.datetime.utcnow().isoformat() + "Z"
+    })
+
     if supabase_client and "your-supabase" not in supabase_client.supabase_url:
         try:
             response = supabase_client.table("products").insert(new_product).execute()
@@ -228,6 +403,15 @@ def update_product(product_id):
     if not data:
         return jsonify({"error": "No update data provided"}), 400
     
+    # Add audit log entry
+    user_header = request.headers.get("X-Admin-User", "System")
+    MOCK_AUDIT_LOGS.insert(0, {
+        "id": f"log-{uuid.uuid4()}",
+        "user": user_header,
+        "action": f"Updated catalog item: ID {product_id}",
+        "timestamp": datetime.datetime.utcnow().isoformat() + "Z"
+    })
+
     if supabase_client and "your-supabase" not in supabase_client.supabase_url:
         try:
             response = supabase_client.table("products").update(data).eq("id", product_id).execute()
@@ -254,6 +438,16 @@ def update_product(product_id):
 @api_bp.route("/products/<product_id>", methods=["DELETE"])
 def delete_product(product_id):
     from app import supabase_client
+    
+    # Add audit log entry
+    user_header = request.headers.get("X-Admin-User", "System")
+    MOCK_AUDIT_LOGS.insert(0, {
+        "id": f"log-{uuid.uuid4()}",
+        "user": user_header,
+        "action": f"Deleted catalog item: ID {product_id}",
+        "timestamp": datetime.datetime.utcnow().isoformat() + "Z"
+    })
+
     if supabase_client and "your-supabase" not in supabase_client.supabase_url:
         try:
             supabase_client.table("products").delete().eq("id", product_id).execute()
@@ -268,3 +462,203 @@ def delete_product(product_id):
         return jsonify({"error": "Product not found"}), 404
     MOCK_PRODUCTS.remove(product)
     return jsonify({"message": "Product deleted successfully", "status": "success"}), 200
+
+# --- CMS Settings Endpoints ---
+@api_bp.route("/settings", methods=["GET"])
+def get_settings():
+    from app import supabase_client
+    if supabase_client and "your-supabase" not in supabase_client.supabase_url:
+        try:
+            response = supabase_client.table("website_settings").select("*").execute()
+            if response.data:
+                # Merge DB settings dynamically
+                db_settings = response.data[0].get("config", {})
+                return jsonify(db_settings), 200
+        except Exception as e:
+            print(f"Supabase settings fetch error: {e}")
+    return jsonify(DEFAULT_SETTINGS), 200
+
+@api_bp.route("/settings", methods=["PUT"])
+def update_settings():
+    from app import supabase_client
+    data = request.json
+    if not data:
+        return jsonify({"error": "No settings data provided"}), 400
+    
+    user_header = request.headers.get("X-Admin-User", "System")
+    MOCK_AUDIT_LOGS.insert(0, {
+        "id": f"log-{uuid.uuid4()}",
+        "user": user_header,
+        "action": f"Updated website configuration settings",
+        "timestamp": datetime.datetime.utcnow().isoformat() + "Z"
+    })
+
+    if supabase_client and "your-supabase" not in supabase_client.supabase_url:
+        try:
+            supabase_client.table("website_settings").upsert({"id": 1, "config": data}).execute()
+            return jsonify({"message": "Settings updated successfully", "status": "success"}), 200
+        except Exception as e:
+            print(f"Supabase settings update error: {e}")
+
+    global DEFAULT_SETTINGS
+    DEFAULT_SETTINGS.update(data)
+    return jsonify({"message": "Settings updated locally", "status": "success", "settings": DEFAULT_SETTINGS}), 200
+
+# --- CMS Leads Endpoints ---
+@api_bp.route("/leads", methods=["GET"])
+def get_leads():
+    from app import supabase_client
+    if supabase_client and "your-supabase" not in supabase_client.supabase_url:
+        try:
+            response = supabase_client.table("leads").select("*").order("created_at", desc=True).execute()
+            if response.data:
+                return jsonify(response.data), 200
+        except Exception as e:
+            print(f"Supabase leads fetch error: {e}")
+    return jsonify(MOCK_LEADS), 200
+
+@api_bp.route("/leads/<lead_id>", methods=["PUT"])
+def update_lead(lead_id):
+    from app import supabase_client
+    data = request.json
+    if not data:
+        return jsonify({"error": "No update data provided"}), 400
+    
+    user_header = request.headers.get("X-Admin-User", "System")
+    MOCK_AUDIT_LOGS.insert(0, {
+        "id": f"log-{uuid.uuid4()}",
+        "user": user_header,
+        "action": f"Updated lead status/notes for ID: {lead_id}",
+        "timestamp": datetime.datetime.utcnow().isoformat() + "Z"
+    })
+
+    if supabase_client and "your-supabase" not in supabase_client.supabase_url:
+        try:
+            response = supabase_client.table("leads").update(data).eq("id", lead_id).execute()
+            if response.data:
+                return jsonify(response.data[0]), 200
+        except Exception as e:
+            print(f"Supabase lead update error: {e}")
+
+    lead = next((l for l in MOCK_LEADS if l["id"] == lead_id), None)
+    if not lead:
+        return jsonify({"error": "Lead not found"}), 404
+    
+    for key, value in data.items():
+        if key != "id":
+            lead[key] = value
+    return jsonify(lead), 200
+
+@api_bp.route("/leads/<lead_id>", methods=["DELETE"])
+def delete_lead(lead_id):
+    from app import supabase_client
+    user_header = request.headers.get("X-Admin-User", "System")
+    MOCK_AUDIT_LOGS.insert(0, {
+        "id": f"log-{uuid.uuid4()}",
+        "user": user_header,
+        "action": f"Deleted lead entry ID: {lead_id}",
+        "timestamp": datetime.datetime.utcnow().isoformat() + "Z"
+    })
+
+    if supabase_client and "your-supabase" not in supabase_client.supabase_url:
+        try:
+            supabase_client.table("leads").delete().eq("id", lead_id).execute()
+            return jsonify({"message": "Lead deleted successfully", "status": "success"}), 200
+        except Exception as e:
+            print(f"Supabase lead deletion error: {e}")
+
+    lead = next((l for l in MOCK_LEADS if l["id"] == lead_id), None)
+    if not lead:
+        return jsonify({"error": "Lead not found"}), 404
+    MOCK_LEADS.remove(lead)
+    return jsonify({"message": "Lead deleted successfully", "status": "success"}), 200
+
+# --- Media Library Endpoints ---
+@api_bp.route("/media", methods=["GET"])
+def get_media():
+    return jsonify(MOCK_MEDIA), 200
+
+@api_bp.route("/media/upload", methods=["POST"])
+def upload_media():
+    data = request.json
+    if not data or not data.get("name"):
+        return jsonify({"error": "Name is required"}), 400
+    
+    new_file = {
+        "id": f"media-{uuid.uuid4()}",
+        "name": data.get("name"),
+        "url": data.get("url") or "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=600&q=80",
+        "size": data.get("size") or "120 KB",
+        "file_type": data.get("file_type") or "image/png",
+        "created_at": datetime.datetime.utcnow().isoformat() + "Z"
+    }
+    MOCK_MEDIA.insert(0, new_file)
+    return jsonify(new_file), 201
+
+@api_bp.route("/media/<media_id>", methods=["DELETE"])
+def delete_media(media_id):
+    media = next((m for m in MOCK_MEDIA if m["id"] == media_id), None)
+    if not media:
+        return jsonify({"error": "Media file not found"}), 404
+    MOCK_MEDIA.remove(media)
+    return jsonify({"message": "Media file removed", "status": "success"}), 200
+
+# --- Users Endpoints ---
+@api_bp.route("/users", methods=["GET"])
+def get_users():
+    return jsonify(MOCK_USERS), 200
+
+@api_bp.route("/users", methods=["POST"])
+def create_user():
+    data = request.json
+    if not data or not data.get("username") or not data.get("role"):
+        return jsonify({"error": "Username and role are required"}), 400
+    
+    new_user = {
+        "id": f"user-{uuid.uuid4()}",
+        "username": data.get("username"),
+        "role": data.get("role"),
+        "email": data.get("email") or f"{data.get('username').lower()}@aonedigital.in"
+    }
+    MOCK_USERS.append(new_user)
+    return jsonify(new_user), 201
+
+@api_bp.route("/users/<user_id>", methods=["PUT"])
+def update_user(user_id):
+    data = request.json
+    user = next((u for u in MOCK_USERS if u["id"] == user_id), None)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    for key, val in data.items():
+        if key != "id":
+            user[key] = val
+    return jsonify(user), 200
+
+@api_bp.route("/users/<user_id>", methods=["DELETE"])
+def delete_user(user_id):
+    user = next((u for u in MOCK_USERS if u["id"] == user_id), None)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+    MOCK_USERS.remove(user)
+    return jsonify({"message": "User deleted successfully"}), 200
+
+# --- Audit Logs ---
+@api_bp.route("/audit-logs", methods=["GET"])
+def get_audit_logs():
+    return jsonify(MOCK_AUDIT_LOGS), 200
+
+# --- Analytics ---
+@api_bp.route("/analytics", methods=["GET"])
+def get_analytics():
+    total_stock = sum(p.get("stock", 0) for p in MOCK_PRODUCTS)
+    featured_count = sum(1 for p in MOCK_PRODUCTS if p.get("featured"))
+    
+    analytics_data = {
+        "visitors": 12450,
+        "views": 4820,
+        "leads_count": len(MOCK_LEADS),
+        "total_stock": total_stock,
+        "featured_count": featured_count,
+        "recent_logs": MOCK_AUDIT_LOGS[:5]
+    }
+    return jsonify(analytics_data), 200

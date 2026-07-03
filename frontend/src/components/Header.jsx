@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-export default function Header({ cartCount, onCartClick }) {
+export default function Header({ cartCount, onCartClick, settings }) {
   const [logoFailed, setLogoFailed] = useState(false);
   const [activeLink, setActiveLink] = useState('Home');
   const [scrolled, setScrolled] = useState(false);
@@ -18,6 +18,8 @@ export default function Header({ cartCount, onCartClick }) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const logoUrl = settings?.hero?.logo_url || "/images/logo.png";
+
   return (
     <header 
       className={`fixed z-50 left-1/2 -translate-x-1/2 transition-all duration-500 ease-out ${
@@ -31,7 +33,7 @@ export default function Header({ cartCount, onCartClick }) {
         <div className="flex items-center gap-3">
           {!logoFailed ? (
             <img 
-              src="/images/logo.png" 
+              src={logoUrl} 
               alt="Aone Digital" 
               className={`object-contain transition-all duration-500 hover:scale-105 cursor-pointer ${
                 scrolled ? 'h-9 max-h-9' : 'h-12 max-h-12'

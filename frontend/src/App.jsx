@@ -49,6 +49,82 @@ export default function App() {
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [adminCredentials, setAdminCredentials] = useState({ username: '', password: '' });
   const [adminLoginError, setAdminLoginError] = useState(null);
+
+  // Default website configuration settings
+  const [settings, setSettings] = useState({
+    announcement: {
+      enabled: true,
+      text: "Festive Upgrade Sale: Get up to 10% instant discount + No-Cost EMI up to 24 months!",
+      link: "#offers"
+    },
+    hero: {
+      title: "Smart Tech.",
+      highlight: "Modern Living.",
+      subtitle: "Curated smartphones and premium smart appliances designed to elevate your home.",
+      cta1_text: "Explore Products",
+      cta1_link: "#products-section",
+      cta2_text: "Contact Us",
+      cta2_link: "#contact",
+      bg_image_url: "/images/hero-bg.png"
+    },
+    about: {
+      title: "Redefining the Electronics Shopping Experience",
+      subtitle: "Certified premium retail destinations since 2012.",
+      description: "At Aone Digital, we bring you genuine global brands with expert support, flexible financing, and rapid home setups."
+    },
+    footer: {
+      copyright: "© 2026 Aone Digital. All rights reserved.",
+      developed_by: "Designed & Developed by Bharath Kumar",
+      email: "support@aonedigital.in",
+      phone: "+91 7975774472",
+      whatsapp: "+91 8453036381",
+      address: "Luxury Square, Tech City",
+      admin_email: "bharath.kumar@aonedigital.in"
+    },
+    theme: {
+      primary: "#f9f9ff",
+      onPrimary: "#141b2b",
+      secondary: "#002d62",
+      borderRadius: "24px",
+      darkMode: false
+    },
+    seo: {
+      title: "Aone Digital India - Premium Phones & Home Appliances",
+      description: "Authorized premium smartphones, laptops, smart TVs and refrigerators with full warranty, fast shipping and easy EMI at Aone Digital.",
+      keywords: "mobiles, laptops, refrigerators, smart tv, no cost emi, Bangalore, electronics store"
+    }
+  });
+
+  const [settingsLoading, setSettingsLoading] = useState(true);
+
+  // CMS Dashboard sub-view tab: 'overview', 'editor', 'products', 'media', 'leads', 'theme', 'users', 'logs'
+  const [cmsTab, setCmsTab] = useState('overview');
+  
+  // Dashboard CMS lists
+  const [leads, setLeads] = useState([]);
+  const [media, setMedia] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [auditLogs, setAuditLogs] = useState([]);
+  const [analytics, setAnalytics] = useState({
+    visitors: 12450,
+    views: 4820,
+    leads_count: 0,
+    total_stock: 0,
+    featured_count: 0,
+    recent_logs: []
+  });
+
+  // Admin users manager
+  const [currentUserRole, setCurrentUserRole] = useState('Super Admin');
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false);
+  const [editingUserId, setEditingUserId] = useState(null);
+  const [userForm, setUserForm] = useState({ username: '', role: 'Content Editor', email: '' });
+
+  // Lead manager state
+  const [selectedLead, setSelectedLead] = useState(null);
+
+  // Search filter
+  const [cmsSearchQuery, setCmsSearchQuery] = useState('');
   
   // Admin product creation / editing variables
   const [isProductModalOpen, setIsProductModalOpen] = useState(false);
@@ -81,19 +157,108 @@ export default function App() {
       });
   };
 
-  // Fetch products from Flask API on load
+  const fetchSettings = () => {
+    setSettingsLoading(true);
+    fetch('/api/settings')
+      .then((res) => res.json())
+      .then((data) => {
+        setSettings(data);
+        setSettingsLoading(false);
+      })
+      .catch((err) => {
+        console.error('Settings fetch error:', err);
+        setSettingsLoading(false);
+      });
+  };
+
+  const fetchLeads = () => {
+    fetch('/api/leads')
+      .then((res) => res.json())
+      .then((data) => setLeads(data))
+      .catch((err) => console.error('Leads fetch error:', err));
+  };
+
+  const fetchMedia = () => {
+    fetch('/api/media')
+      .then((res) => res.json())
+      .then((data) => setMedia(data))
+      .catch((err) => console.error('Media fetch error:', err));
+  };
+
+  const fetchUsers = () => {
+    fetch('/api/users')
+      .then((res) => res.json())
+      .then((data) => setUsers(data))
+      .catch((err) => console.error('Users fetch error:', err));
+  };
+
+  const fetchAuditLogs = () => {
+    fetch('/api/audit-logs')
+      .then((res) => res.json())
+      .then((data) => setAuditLogs(data))
+      .catch((err) => console.error('Audit logs fetch error:', err));
+  };
+
+  const fetchAnalytics = () => {
+    fetch('/api/analytics')
+      .then((res) => res.json())
+      .then((data) => setAnalytics(data))
+      .catch((err) => console.error('Analytics fetch error:', err));
+  };
+
+  // Fetch all CMS dashboard modules on load
   useEffect(() => {
     refreshProducts();
+    fetchSettings();
   }, []);
+
+  // Sync data when view is toggled to dashboard
+  useEffect(() => {
+    if (view === 'admin-dashboard') {
+      fetchLeads();
+      fetchMedia();
+      fetchUsers();
+      fetchAuditLogs();
+      fetchAnalytics();
+    }
+  }, [view]);
+
+  // Bind CSS custom variables and page title/meta updates on settings change
+  useEffect(() => {
+    if (settings && settings.theme) {
+      const root = document.documentElement;
+      root.style.setProperty('--bg-primary', settings.theme.primary || '#f9f9ff');
+      root.style.setProperty('--on-background', settings.theme.onPrimary || '#141b2b');
+      root.style.setProperty('--secondary', settings.theme.secondary || '#002d62');
+      root.style.setProperty('--radius-3xl', settings.theme.borderRadius || '24px');
+      
+      if (settings.seo) {
+        document.title = settings.seo.title || "Aone Digital";
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) {
+          metaDesc.setAttribute('content', settings.seo.description || '');
+        }
+      }
+    }
+  }, [settings]);
 
   const handleAdminLogin = (e) => {
     e.preventDefault();
     if (adminCredentials.username === 'Bharath' && adminCredentials.password === 'Bharath@123') {
       setIsAdminLoggedIn(true);
+      setCurrentUserRole('Super Admin');
       setAdminLoginError(null);
       setView('admin-dashboard');
     } else {
-      setAdminLoginError('Invalid administrator credentials.');
+      const match = users.find((u) => u.username === adminCredentials.username);
+      if (match && adminCredentials.password === 'Bharath@123') {
+        setIsAdminLoggedIn(true);
+        setCurrentUserRole(match.role);
+        setAdminLoginError(null);
+        setView('admin-dashboard');
+      } else {
+        setAdminLoginError('Invalid administrator credentials.');
+      }
     }
   };
 
@@ -158,6 +323,132 @@ export default function App() {
       specifications: product.specifications || {}
     });
     setIsProductModalOpen(true);
+  };
+
+  const handleSaveSettings = (e) => {
+    e.preventDefault();
+    fetch('/api/settings', {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'X-Admin-User': adminCredentials.username || 'Admin'
+      },
+      body: JSON.stringify(settings)
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Settings update failed');
+        return res.json();
+      })
+      .then(() => {
+        alert('Website settings updated and published successfully!');
+        fetchSettings();
+      })
+      .catch((err) => alert(err.message));
+  };
+
+  const handleUserSubmit = (e) => {
+    e.preventDefault();
+    const endpoint = editingUserId ? `/api/users/${editingUserId}` : '/api/users';
+    const method = editingUserId ? 'PUT' : 'POST';
+
+    fetch(endpoint, {
+      method: method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userForm)
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('User submit failed');
+        return res.json();
+      })
+      .then(() => {
+        setIsUserModalOpen(false);
+        setEditingUserId(null);
+        setUserForm({ username: '', role: 'Content Editor', email: '' });
+        fetchUsers();
+      })
+      .catch((err) => alert(err.message));
+  };
+
+  const handleDeleteUser = (userId) => {
+    if (!window.confirm('Are you sure you want to remove this user?')) return;
+    fetch(`/api/users/${userId}`, { method: 'DELETE' })
+      .then((res) => {
+        if (!res.ok) throw new Error('Delete user failed');
+        return res.json();
+      })
+      .then(() => fetchUsers())
+      .catch((err) => alert(err.message));
+  };
+
+  const handleUpdateLeadStatus = (leadId, status, notes) => {
+    fetch(`/api/leads/${leadId}`, {
+      method: 'PUT',
+      headers: { 
+        'Content-Type': 'application/json',
+        'X-Admin-User': adminCredentials.username || 'Admin'
+      },
+      body: JSON.stringify({ status, notes })
+    })
+      .then((res) => res.json())
+      .then(() => {
+        fetchLeads();
+        setSelectedLead(null);
+      })
+      .catch((err) => alert(err.message));
+  };
+
+  const handleExportLeadsCSV = () => {
+    const headers = ["Lead ID", "Customer Name", "Email", "Phone", "Category", "Budget", "Notes", "Status", "Created At"];
+    const rows = leads.map(l => [
+      l.id,
+      l.name,
+      l.email,
+      l.phone,
+      l.category,
+      l.budget,
+      l.notes.replace(/,/g, ' '),
+      l.status,
+      l.created_at
+    ]);
+    
+    let csvContent = "data:text/csv;charset=utf-8," 
+      + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
+      
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `aone_digital_leads_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleMediaUpload = (e) => {
+    e.preventDefault();
+    const fileName = prompt("Enter simulated filename or paste image URL directly:");
+    if (!fileName) return;
+
+    fetch('/api/media/upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: fileName.substring(fileName.lastIndexOf('/') + 1) || fileName,
+        url: fileName.startsWith('http') ? fileName : "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=600&q=80",
+        size: "210 KB",
+        file_type: "image/png"
+      })
+    })
+      .then((res) => res.json())
+      .then(() => fetchMedia())
+      .catch((err) => alert(err.message));
+  };
+
+  const handleDeleteMedia = (mediaId) => {
+    if (!window.confirm('Delete this asset from media library?')) return;
+    fetch(`/api/media/${mediaId}`, { method: 'DELETE' })
+      .then((res) => res.json())
+      .then(() => fetchMedia())
+      .catch((err) => alert(err.message));
   };
 
   const handleAddToCart = (product) => {
@@ -475,7 +766,7 @@ export default function App() {
           <section className="py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-section-gap items-center">
               <div className="reveal active">
-                <h2 className="font-headline-md text-on-surface mb-8">Redefining the Electronics Shopping Experience</h2>
+                <h2 className="font-headline-md text-on-surface mb-8">{settings?.about?.title || 'Redefining the Electronics Shopping Experience'}</h2>
                 <div className="space-y-8">
                   {[
                     { icon: 'workspace_premium', title: 'Authorized Retailer', desc: 'We are certified partners for Apple, Samsung, Sony, and LG, ensuring genuine products every time.' },
@@ -864,118 +1155,996 @@ export default function App() {
         </section>
       )}
 
-      {/* Admin Dashboard View */}
+      {/* Redesigned Enterprise-Grade CMS Dashboard */}
       {view === 'admin-dashboard' && (
-        <section className="py-28 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6 border-b border-outline-variant/30 pb-6">
-            <div>
-              <h2 className="font-headline-md text-on-surface">Admin Inventory Dashboard</h2>
-              <p className="text-text-secondary text-sm">Manage products, pricing, stock levels, and brand information.</p>
+        <div className="min-h-screen bg-slate-50 flex text-slate-800 font-sans z-[110] relative">
+          
+          {/* Sidebar Menu */}
+          <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col fixed inset-y-0 left-0 z-30 shadow-2xl border-r border-slate-800">
+            <div className="p-6 border-b border-slate-800 flex items-center gap-3">
+              <span className="material-symbols-outlined text-secondary text-2xl font-bold">grid_view</span>
+              <div>
+                <h1 className="text-white font-extrabold text-lg tracking-tight leading-none">Aone Digital</h1>
+                <span className="text-[10px] text-text-muted tracking-wider uppercase font-semibold">CMS Dashboard</span>
+              </div>
             </div>
-            <div className="flex gap-3">
-              <button 
-                className="px-5 py-3 bg-secondary text-white font-bold rounded-xl shadow-md hover:bg-secondary-container hover:scale-105 transition-all text-xs flex items-center gap-2 cursor-pointer"
-                onClick={() => {
-                  setEditingProductId(null);
-                  setProductForm({
-                    name: '',
-                    brand: '',
-                    category: 'mobile',
-                    price: '',
-                    stock: '',
-                    description: '',
-                    image_url: '',
-                    specifications: {}
-                  });
-                  setIsProductModalOpen(true);
-                }}
-              >
-                <span className="material-symbols-outlined text-sm">add</span> Add New Product
-              </button>
-              <button 
-                className="px-5 py-3 border border-outline text-on-surface font-bold rounded-xl hover:bg-slate-50 hover:scale-105 transition-all text-xs flex items-center gap-2 cursor-pointer"
+            
+            {/* User Profile Info */}
+            <div className="p-4 mx-4 my-3 bg-slate-850/50 rounded-xl border border-slate-800 flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-secondary-container text-white flex items-center justify-center font-bold text-sm">
+                {currentUserRole[0]}
+              </div>
+              <div className="overflow-hidden">
+                <span className="text-white text-xs font-bold block truncate">{adminCredentials.username || 'Bharath'}</span>
+                <span className="text-[10px] text-text-muted block truncate font-mono">{currentUserRole}</span>
+              </div>
+            </div>
+
+            {/* Navigation links */}
+            <nav className="flex-1 px-4 py-3 space-y-1 overflow-y-auto">
+              {[
+                { id: 'overview', name: 'Overview', icon: 'dashboard' },
+                { id: 'editor', name: 'Content Builder', icon: 'edit_note' },
+                { id: 'products', name: 'Products Catalog', icon: 'shopping_bag' },
+                { id: 'media', name: 'Media Library', icon: 'image' },
+                { id: 'leads', name: 'Leads & Contacts', icon: 'group' },
+                { id: 'theme', name: 'Branding & SEO', icon: 'palette' },
+                { id: 'users', name: 'Team & Roles', icon: 'admin_panel_settings' },
+                { id: 'logs', name: 'Audit Trail', icon: 'history' }
+              ].map((tab) => {
+                const isActive = cmsTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      setCmsTab(tab.id);
+                      setCmsSearchQuery('');
+                    }}
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold rounded-xl transition-all ${
+                      isActive 
+                        ? 'bg-secondary text-white shadow-lg shadow-secondary/20' 
+                        : 'hover:bg-slate-800 hover:text-white'
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-sm">{tab.icon}</span>
+                    <span>{tab.name}</span>
+                  </button>
+                );
+              })}
+            </nav>
+
+            <div className="p-4 border-t border-slate-800">
+              <button
                 onClick={() => {
                   setIsAdminLoggedIn(false);
                   setView('home');
                 }}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-slate-700 hover:border-red-500 hover:text-red-500 hover:bg-red-500/5 text-xs font-bold rounded-xl transition-colors cursor-pointer"
               >
-                <span className="material-symbols-outlined text-sm">logout</span> Logout
+                <span className="material-symbols-outlined text-sm">logout</span> Logout Dashboard
               </button>
             </div>
-          </div>
+          </aside>
 
-          {loading ? (
-            <div className="text-center py-20 text-text-secondary">
-              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-secondary mx-auto mb-4"></div>
-              <p className="text-sm">Loading products...</p>
-            </div>
-          ) : (
-            <div className="bg-white border border-outline-variant/30 rounded-[32px] overflow-hidden shadow-xl">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-surface-container-low border-b border-outline-variant/50">
-                      <th className="p-6 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Product</th>
-                      <th className="p-6 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Category</th>
-                      <th className="p-6 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Brand</th>
-                      <th className="p-6 text-xs font-bold text-on-surface-variant uppercase tracking-wider text-right">Price</th>
-                      <th className="p-6 text-xs font-bold text-on-surface-variant uppercase tracking-wider text-center">Stock</th>
-                      <th className="p-6 text-xs font-bold text-on-surface-variant uppercase tracking-wider text-center">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-outline-variant/20">
-                    {products.map((product) => (
-                      <tr key={product.id} className="hover:bg-slate-50/50 transition-colors">
-                        <td className="p-6 flex items-center gap-4">
+          {/* Right Main Container */}
+          <main className="flex-grow pl-64 flex flex-col min-h-screen">
+            
+            {/* Top Bar Header */}
+            <header className="h-16 bg-white border-b border-slate-200 px-8 flex justify-between items-center sticky top-0 z-20 shadow-sm">
+              <div className="flex items-center gap-2 text-xs text-text-secondary font-semibold">
+                <span>Admin</span>
+                <span className="material-symbols-outlined text-xs">chevron_right</span>
+                <span>Dashboard</span>
+                <span className="material-symbols-outlined text-xs">chevron_right</span>
+                <span className="text-secondary font-bold capitalize">{cmsTab}</span>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setView('home')}
+                  className="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-sm">open_in_new</span> Live Website
+                </button>
+                <div className="h-4 w-[1px] bg-slate-200"></div>
+                <div className="text-right">
+                  <span className="text-xs font-bold text-slate-700 block leading-none">{adminCredentials.username || 'Bharath'}</span>
+                  <span className="text-[9px] font-bold text-secondary uppercase tracking-wider">{currentUserRole}</span>
+                </div>
+              </div>
+            </header>
+
+            {/* Panel Area */}
+            <div className="p-8 max-w-[1400px] w-full mx-auto flex-1">
+              
+              {/* Tab 1: OVERVIEW */}
+              {cmsTab === 'overview' && (
+                <div className="space-y-8 animate-fade-in">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h2 className="text-xl font-bold text-slate-800">Operational Overview</h2>
+                      <p className="text-xs text-slate-500">Live analytics metrics from the storefront portal database.</p>
+                    </div>
+                    <div className="text-xs font-semibold bg-white border border-slate-200 px-3 py-1.5 rounded-lg text-slate-500">
+                      System Time: 2026-07-03
+                    </div>
+                  </div>
+
+                  {/* Summary Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center gap-4 hover:shadow-md transition-all">
+                      <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                        <span className="material-symbols-outlined text-xl">trending_up</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Visitors</span>
+                        <h3 className="text-xl font-extrabold text-slate-800 leading-tight">12,450</h3>
+                      </div>
+                    </div>
+                    <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center gap-4 hover:shadow-md transition-all">
+                      <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center">
+                        <span className="material-symbols-outlined text-xl">visibility</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Product Views</span>
+                        <h3 className="text-xl font-extrabold text-slate-800 leading-tight">4,820</h3>
+                      </div>
+                    </div>
+                    <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center gap-4 hover:shadow-md transition-all">
+                      <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center">
+                        <span className="material-symbols-outlined text-xl">group</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Leads Received</span>
+                        <h3 className="text-xl font-extrabold text-slate-800 leading-tight">{leads.length}</h3>
+                      </div>
+                    </div>
+                    <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center gap-4 hover:shadow-md transition-all">
+                      <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
+                        <span className="material-symbols-outlined text-xl">inventory_2</span>
+                      </div>
+                      <div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Catalog Size</span>
+                        <h3 className="text-xl font-extrabold text-slate-800 leading-tight">{products.length}</h3>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Audit / Action items grid */}
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                      <h4 className="font-bold text-sm text-slate-800 mb-4">Top Visited Categories</h4>
+                      <div className="space-y-4">
+                        <div>
+                          <div className="flex justify-between text-xs font-semibold mb-1">
+                            <span>Smartphones</span>
+                            <span>65% of views</span>
+                          </div>
+                          <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div className="bg-secondary h-full rounded-full" style={{ width: '65%' }}></div>
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex justify-between text-xs font-semibold mb-1">
+                            <span>Home Appliances</span>
+                            <span>25% of views</span>
+                          </div>
+                          <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div className="bg-secondary h-full rounded-full" style={{ width: '25%' }}></div>
+                          </div>
+                        </div>
+                        <div>
+                          <div className="flex justify-between text-xs font-semibold mb-1">
+                            <span>Other Electronics</span>
+                            <span>10% of views</span>
+                          </div>
+                          <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
+                            <div className="bg-secondary h-full rounded-full" style={{ width: '10%' }}></div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                      <h4 className="font-bold text-sm text-slate-800 mb-4">Recent Audit Actions</h4>
+                      <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+                        {auditLogs.slice(0, 4).map((log) => (
+                          <div key={log.id} className="text-xs border-b border-slate-100 pb-2 last:border-0">
+                            <div className="flex justify-between text-slate-500 font-bold mb-0.5">
+                              <span>{log.user}</span>
+                              <span className="text-[10px] font-normal">{new Date(log.timestamp).toLocaleTimeString()}</span>
+                            </div>
+                            <p className="text-slate-700 leading-tight font-medium">{log.action}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 2: CONTENT BUILDER (Website Settings Copywriting Editor) */}
+              {cmsTab === 'editor' && (
+                <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm space-y-6 animate-fade-in">
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-800">Visual Page Content Builder</h2>
+                    <p className="text-xs text-slate-500">Edit dynamic storefront copy, banner links, and hero sliders instantly.</p>
+                  </div>
+                  
+                  <form onSubmit={handleSaveSettings} className="space-y-8 divide-y divide-slate-100">
+                    
+                    {/* Announcement Section */}
+                    <div className="space-y-4 pt-4 first:pt-0">
+                      <h3 className="font-bold text-sm text-slate-800 flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-sm text-secondary">campaign</span> Header Announcement Bar
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-slate-500 text-[10px] font-bold block uppercase">ENABLE BAR</label>
+                          <select 
+                            value={settings.announcement?.enabled ? "yes" : "no"} 
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              announcement: { ...settings.announcement, enabled: e.target.value === "yes" }
+                            })}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs font-semibold"
+                          >
+                            <option value="yes">Visible / Active</option>
+                            <option value="no">Hidden / Disabled</option>
+                          </select>
+                        </div>
+                        <div className="md:col-span-2 space-y-2">
+                          <label className="text-slate-500 text-[10px] font-bold block uppercase">ANNOUNCEMENT TEXT</label>
+                          <input 
+                            type="text" 
+                            value={settings.announcement?.text || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              announcement: { ...settings.announcement, text: e.target.value }
+                            })}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs font-semibold"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Hero Section copy */}
+                    <div className="space-y-4 pt-6">
+                      <h3 className="font-bold text-sm text-slate-800 flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-sm text-secondary">view_carousel</span> Hero Landing Section
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-slate-500 text-[10px] font-bold block uppercase">MAIN HEADLINE PREFIX</label>
+                          <input 
+                            type="text" 
+                            value={settings.hero?.title || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              hero: { ...settings.hero, title: e.target.value }
+                            })}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs font-semibold"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-slate-500 text-[10px] font-bold block uppercase">HIGHLIGHTED HEADLINE (SECONDARY)</label>
+                          <input 
+                            type="text" 
+                            value={settings.hero?.highlight || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              hero: { ...settings.hero, highlight: e.target.value }
+                            })}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs font-semibold"
+                          />
+                        </div>
+                        <div className="md:col-span-2 space-y-2">
+                          <label className="text-slate-500 text-[10px] font-bold block uppercase">SUBTITLE / VALUE STATEMENT</label>
+                          <textarea 
+                            rows="2"
+                            value={settings.hero?.subtitle || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              hero: { ...settings.hero, subtitle: e.target.value }
+                            })}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs font-semibold resize-none"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-slate-500 text-[10px] font-bold block uppercase">BACKGROUND IMAGE PATH</label>
+                          <input 
+                            type="text" 
+                            value={settings.hero?.bg_image_url || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              hero: { ...settings.hero, bg_image_url: e.target.value }
+                            })}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs font-semibold"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-slate-500 text-[10px] font-bold block uppercase">LOGO PATH (HEADER)</label>
+                          <input 
+                            type="text" 
+                            value={settings.hero?.logo_url || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              hero: { ...settings.hero, logo_url: e.target.value }
+                            })}
+                            placeholder="/images/logo.png"
+                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs font-semibold"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* About Section copy */}
+                    <div className="space-y-4 pt-6">
+                      <h3 className="font-bold text-sm text-slate-800 flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-sm text-secondary">info</span> About Brand Section
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-slate-500 text-[10px] font-bold block uppercase">SECTION TITLE</label>
+                          <input 
+                            type="text" 
+                            value={settings.about?.title || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              about: { ...settings.about, title: e.target.value }
+                            })}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs font-semibold"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-slate-500 text-[10px] font-bold block uppercase">SUB-HEADING</label>
+                          <input 
+                            type="text" 
+                            value={settings.about?.subtitle || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              about: { ...settings.about, subtitle: e.target.value }
+                            })}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs font-semibold"
+                          />
+                        </div>
+                        <div className="md:col-span-2 space-y-2">
+                          <label className="text-slate-500 text-[10px] font-bold block uppercase">ABOUT DESCRIPTION</label>
+                          <textarea 
+                            rows="3"
+                            value={settings.about?.description || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              about: { ...settings.about, description: e.target.value }
+                            })}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs font-semibold resize-none"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-6 flex justify-end">
+                      <button 
+                        type="submit" 
+                        className="px-6 py-3 bg-secondary text-white text-xs font-bold rounded-xl shadow-lg hover:bg-secondary-container hover:scale-105 transition-all flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-sm">publish</span> Publish Live Settings
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+
+              {/* Tab 3: PRODUCTS CATALOG (CRUD) */}
+              {cmsTab === 'products' && (
+                <div className="space-y-6 animate-fade-in">
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                      <h2 className="text-xl font-bold text-slate-800">Products Inventory</h2>
+                      <p className="text-xs text-slate-500">Insert, update, edit, and organize product catalogs.</p>
+                    </div>
+                    
+                    <div className="flex gap-3 w-full md:w-auto">
+                      <div className="relative flex-grow md:w-64">
+                        <span className="material-symbols-outlined absolute left-3 top-2.5 text-slate-400 text-sm">search</span>
+                        <input
+                          type="text"
+                          placeholder="Search product catalog..."
+                          value={cmsSearchQuery}
+                          onChange={(e) => setCmsSearchQuery(e.target.value)}
+                          className="w-full bg-white border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs font-semibold outline-none focus:ring-1 focus:ring-secondary"
+                        />
+                      </div>
+                      <button
+                        onClick={() => {
+                          setEditingProductId(null);
+                          setProductForm({
+                            name: '',
+                            brand: '',
+                            category: 'mobile',
+                            price: '',
+                            stock: '',
+                            description: '',
+                            image_url: '',
+                            specifications: {}
+                          });
+                          setIsProductModalOpen(true);
+                        }}
+                        className="px-4 py-2 bg-secondary text-white text-xs font-bold rounded-xl shadow-md hover:bg-secondary-container flex items-center gap-1.5 cursor-pointer flex-shrink-0"
+                      >
+                        <span className="material-symbols-outlined text-sm">add</span> + Add New
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="bg-white border border-slate-200 rounded-[24px] overflow-hidden shadow-sm">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 text-[10px] font-bold uppercase tracking-wider">
+                            <th className="p-5">Product Name</th>
+                            <th className="p-5">Category</th>
+                            <th className="p-5">Brand</th>
+                            <th className="p-5 text-right">Price</th>
+                            <th className="p-5 text-center">Stock</th>
+                            <th className="p-5 text-center">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 text-xs font-medium text-slate-700">
+                          {products
+                            .filter(p => p.name.toLowerCase().includes(cmsSearchQuery.toLowerCase()) || p.brand.toLowerCase().includes(cmsSearchQuery.toLowerCase()))
+                            .map((product) => (
+                              <tr key={product.id} className="hover:bg-slate-50/50 transition-colors">
+                                <td className="p-5 flex items-center gap-3">
+                                  <img 
+                                    src={product.image_url} 
+                                    alt={product.name} 
+                                    className="w-10 h-10 rounded-lg object-contain bg-slate-50 border border-slate-100"
+                                    onError={(e) => {
+                                      e.target.src = "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=100&q=80";
+                                    }}
+                                  />
+                                  <div>
+                                    <span className="font-bold text-slate-800 block text-sm">{product.name}</span>
+                                    <span className="text-[10px] text-text-muted font-mono">{product.id}</span>
+                                  </div>
+                                </td>
+                                <td className="p-5 text-slate-500 capitalize">{product.category.replace('_', ' ')}</td>
+                                <td className="p-5 text-slate-500">{product.brand}</td>
+                                <td className="p-5 text-slate-800 font-extrabold text-right">₹{product.price.toLocaleString('en-IN')}</td>
+                                <td className="p-5 text-center">
+                                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                                    product.stock > 10 ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'
+                                  }`}>
+                                    {product.stock} units
+                                  </span>
+                                </td>
+                                <td className="p-5 text-center">
+                                  <div className="flex gap-2 justify-center">
+                                    <button 
+                                      className="p-1.5 text-secondary hover:bg-secondary/10 rounded-lg transition-colors flex items-center cursor-pointer"
+                                      onClick={() => handleEditClick(product)}
+                                    >
+                                      <span className="material-symbols-outlined text-sm">edit</span>
+                                    </button>
+                                    {currentUserRole !== 'Content Editor' ? (
+                                      <button 
+                                        className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center cursor-pointer"
+                                        onClick={() => handleDeleteProduct(product.id)}
+                                      >
+                                        <span className="material-symbols-outlined text-sm">delete</span>
+                                      </button>
+                                    ) : (
+                                      <span className="text-[9px] text-slate-400 italic">Locked</span>
+                                    )}
+                                  </div>
+                                </td>
+                              </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 4: MEDIA LIBRARY */}
+              {cmsTab === 'media' && (
+                <div className="space-y-6 animate-fade-in">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h2 className="text-xl font-bold text-slate-800">Media Assets Library</h2>
+                      <p className="text-xs text-slate-500">Upload, reuse, catalog, and query website graphics, files, and icons.</p>
+                    </div>
+                    
+                    <button 
+                      onClick={handleMediaUpload}
+                      className="px-4 py-2 bg-secondary text-white text-xs font-bold rounded-xl shadow-md hover:bg-secondary-container flex items-center gap-1.5 cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-sm">cloud_upload</span> Upload File
+                    </button>
+                  </div>
+
+                  {/* Media Grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                    {media.map((file) => (
+                      <div key={file.id} className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm group hover:shadow-md transition-all flex flex-col">
+                        <div className="h-28 bg-slate-50 flex items-center justify-center p-3 border-b border-slate-100 relative">
                           <img 
-                            src={product.image_url} 
-                            alt={product.name} 
-                            className="w-12 h-12 rounded-xl object-contain bg-slate-50 border border-slate-100"
+                            src={file.url} 
+                            alt={file.name} 
+                            className="max-h-full max-w-full object-contain"
                             onError={(e) => {
-                              e.target.src = "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=100&q=80";
+                              e.target.src = "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=200&q=80";
                             }}
                           />
+                          <button
+                            onClick={() => handleDeleteMedia(file.id)}
+                            className="absolute top-2 right-2 p-1.5 bg-white/80 backdrop-blur text-red-600 rounded-full hover:bg-red-50 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity flex items-center cursor-pointer border border-slate-200 shadow-sm"
+                            title="Delete asset"
+                          >
+                            <span className="material-symbols-outlined text-xs">delete</span>
+                          </button>
+                        </div>
+                        <div className="p-3 text-xs flex-grow flex flex-col justify-between">
                           <div>
-                            <span className="font-semibold text-on-surface text-sm block">{product.name}</span>
-                            <span className="text-[10px] text-text-muted font-mono">{product.id}</span>
+                            <span className="font-bold text-slate-850 truncate block" title={file.name}>{file.name}</span>
+                            <span className="text-[10px] text-text-muted font-mono">{file.size}</span>
                           </div>
-                        </td>
-                        <td className="p-6 text-sm text-text-secondary capitalize">{product.category.replace('_', ' ')}</td>
-                        <td className="p-6 text-sm text-text-secondary">{product.brand}</td>
-                        <td className="p-6 text-sm text-on-surface font-bold text-right">₹{product.price.toLocaleString('en-IN')}</td>
-                        <td className="p-6 text-sm text-text-secondary text-center">
-                          <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                            product.stock > 10 ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'
-                          }`}>
-                            {product.stock} units
-                          </span>
-                        </td>
-                        <td className="p-6 text-center">
-                          <div className="flex gap-2 justify-center">
-                            <button 
-                              className="p-2 text-secondary hover:bg-secondary/10 rounded-lg transition-colors flex items-center cursor-pointer"
-                              onClick={() => handleEditClick(product)}
-                              title="Edit product"
-                            >
-                              <span className="material-symbols-outlined text-lg">edit</span>
-                            </button>
-                            <button 
-                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center cursor-pointer"
-                              onClick={() => handleDeleteProduct(product.id)}
-                              title="Delete product"
-                            >
-                              <span className="material-symbols-outlined text-lg">delete</span>
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(file.url);
+                              alert('Media URL path copied to clipboard!');
+                            }}
+                            className="w-full mt-2.5 py-1.5 bg-slate-50 border border-slate-200 text-slate-600 rounded-lg font-bold text-[10px] hover:bg-secondary hover:text-white hover:border-secondary transition-all flex items-center justify-center gap-1 cursor-pointer"
+                          >
+                            <span className="material-symbols-outlined text-xs">content_copy</span> Copy Link
+                          </button>
+                        </div>
+                      </div>
                     ))}
-                  </tbody>
-                </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 5: LEADS AND CONTACT SUBMISSIONS */}
+              {cmsTab === 'leads' && (
+                <div className="space-y-6 animate-fade-in">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h2 className="text-xl font-bold text-slate-800">Leads Center</h2>
+                      <p className="text-xs text-slate-500">Track and respond to website user inquiries and newsletter subscribers.</p>
+                    </div>
+
+                    <button
+                      onClick={handleExportLeadsCSV}
+                      className="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                    >
+                      <span className="material-symbols-outlined text-sm">download</span> Export Leads (.CSV)
+                    </button>
+                  </div>
+
+                  <div className="bg-white border border-slate-200 rounded-[24px] overflow-hidden shadow-sm">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 text-[10px] font-bold uppercase tracking-wider">
+                            <th className="p-5">Customer</th>
+                            <th className="p-5">Contact Details</th>
+                            <th className="p-5">Inquiry Type</th>
+                            <th className="p-5">Follow-Up Note</th>
+                            <th className="p-5 text-center">Status</th>
+                            <th className="p-5 text-center">Action</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 text-xs font-medium text-slate-700">
+                          {leads.map((lead) => (
+                            <tr key={lead.id} className="hover:bg-slate-50/50 transition-colors">
+                              <td className="p-5">
+                                <span className="font-bold text-slate-800 block text-sm">{lead.name}</span>
+                                <span className="text-[10px] text-text-muted font-mono">{new Date(lead.created_at).toLocaleDateString()}</span>
+                              </td>
+                              <td className="p-5">
+                                <span className="block text-slate-600">{lead.email}</span>
+                                <span className="text-[10px] text-text-muted font-mono">{lead.phone}</span>
+                              </td>
+                              <td className="p-5 text-slate-500">
+                                <span className="px-2 py-0.5 bg-slate-100 rounded text-[10px] font-bold">{lead.category}</span>
+                              </td>
+                              <td className="p-5 text-slate-600 max-w-xs truncate" title={lead.notes}>
+                                {lead.notes || 'No follow-up notes.'}
+                              </td>
+                              <td className="p-5 text-center">
+                                <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold capitalize ${
+                                  lead.status === 'won' ? 'bg-green-50 text-green-700' :
+                                  lead.status === 'contacted' ? 'bg-blue-50 text-blue-700' : 'bg-amber-50 text-amber-700'
+                                }`}>
+                                  {lead.status}
+                                </span>
+                              </td>
+                              <td className="p-5 text-center">
+                                <button
+                                  onClick={() => setSelectedLead(lead)}
+                                  className="p-1.5 text-secondary hover:bg-secondary/10 rounded-lg transition-colors inline-flex items-center cursor-pointer"
+                                  title="Manage Lead details"
+                                >
+                                  <span className="material-symbols-outlined text-sm">edit_note</span>
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 6: BRANDING & SEO */}
+              {cmsTab === 'theme' && (
+                <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm space-y-6 animate-fade-in">
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-800">Dynamic Branding &amp; SEO Engine</h2>
+                    <p className="text-xs text-slate-500">Customize color styles, margins, typography, and page headers directly.</p>
+                  </div>
+
+                  <form onSubmit={handleSaveSettings} className="space-y-8 divide-y divide-slate-100">
+                    
+                    {/* Colors & Custom styles */}
+                    <div className="space-y-4 pt-4 first:pt-0">
+                      <h3 className="font-bold text-sm text-slate-800 flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-sm text-secondary">palette</span> Custom Color Palette
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="space-y-2">
+                          <label className="text-slate-500 text-[10px] font-bold block uppercase">BACKGROUND COLOR</label>
+                          <div className="flex gap-2">
+                            <input 
+                              type="color" 
+                              value={settings.theme?.primary || '#f9f9ff'} 
+                              onChange={(e) => setSettings({
+                                ...settings,
+                                theme: { ...settings.theme, primary: e.target.value }
+                              })}
+                              className="w-10 h-10 border border-slate-200 rounded-lg cursor-pointer"
+                            />
+                            <input 
+                              type="text" 
+                              value={settings.theme?.primary || '#f9f9ff'} 
+                              onChange={(e) => setSettings({
+                                ...settings,
+                                theme: { ...settings.theme, primary: e.target.value }
+                              })}
+                              className="flex-grow bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold"
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-slate-500 text-[10px] font-bold block uppercase">TEXT COLOR</label>
+                          <div className="flex gap-2">
+                            <input 
+                              type="color" 
+                              value={settings.theme?.onPrimary || '#141b2b'} 
+                              onChange={(e) => setSettings({
+                                ...settings,
+                                theme: { ...settings.theme, onPrimary: e.target.value }
+                              })}
+                              className="w-10 h-10 border border-slate-200 rounded-lg cursor-pointer"
+                            />
+                            <input 
+                              type="text" 
+                              value={settings.theme?.onPrimary || '#141b2b'} 
+                              onChange={(e) => setSettings({
+                                ...settings,
+                                theme: { ...settings.theme, onPrimary: e.target.value }
+                              })}
+                              className="flex-grow bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold"
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-slate-500 text-[10px] font-bold block uppercase">SECONDARY ACCENT COLOR</label>
+                          <div className="flex gap-2">
+                            <input 
+                              type="color" 
+                              value={settings.theme?.secondary || '#002d62'} 
+                              onChange={(e) => setSettings({
+                                ...settings,
+                                theme: { ...settings.theme, secondary: e.target.value }
+                              })}
+                              className="w-10 h-10 border border-slate-200 rounded-lg cursor-pointer"
+                            />
+                            <input 
+                              type="text" 
+                              value={settings.theme?.secondary || '#002d62'} 
+                              onChange={(e) => setSettings({
+                                ...settings,
+                                theme: { ...settings.theme, secondary: e.target.value }
+                              })}
+                              className="flex-grow bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs font-semibold"
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-slate-500 text-[10px] font-bold block uppercase">ACCENT BORDER RADIUS</label>
+                          <select 
+                            value={settings.theme?.borderRadius || '24px'} 
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              theme: { ...settings.theme, borderRadius: e.target.value }
+                            })}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs font-semibold"
+                          >
+                            <option value="24px">Rounded Premium (24px)</option>
+                            <option value="12px">Classic Soft (12px)</option>
+                            <option value="8px">Sharp Corporate (8px)</option>
+                            <option value="0px">Minimal Boxed (0px)</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* SEO Metadata parameters */}
+                    <div className="space-y-4 pt-6">
+                      <h3 className="font-bold text-sm text-slate-800 flex items-center gap-1.5">
+                        <span className="material-symbols-outlined text-sm text-secondary">language</span> SEO Tags &amp; Metadata
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="md:col-span-2 space-y-2">
+                          <label className="text-slate-500 text-[10px] font-bold block uppercase">META TITLE TAG</label>
+                          <input 
+                            type="text" 
+                            value={settings.seo?.title || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              seo: { ...settings.seo, title: e.target.value }
+                            })}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs font-semibold"
+                          />
+                        </div>
+                        <div className="md:col-span-2 space-y-2">
+                          <label className="text-slate-500 text-[10px] font-bold block uppercase">META DESCRIPTION</label>
+                          <textarea 
+                            rows="2"
+                            value={settings.seo?.description || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              seo: { ...settings.seo, description: e.target.value }
+                            })}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs font-semibold resize-none"
+                          />
+                        </div>
+                        <div className="md:col-span-2 space-y-2">
+                          <label className="text-slate-500 text-[10px] font-bold block uppercase">KEYWORDS INDEX (COMMA-SEPARATED)</label>
+                          <input 
+                            type="text" 
+                            value={settings.seo?.keywords || ''}
+                            onChange={(e) => setSettings({
+                              ...settings,
+                              seo: { ...settings.seo, keywords: e.target.value }
+                            })}
+                            className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-xs font-semibold"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-6 flex justify-end">
+                      <button 
+                        type="submit" 
+                        className="px-6 py-3 bg-secondary text-white text-xs font-bold rounded-xl shadow-lg hover:bg-secondary-container hover:scale-105 transition-all flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-sm">save</span> Save Branding Styles
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              )}
+
+              {/* Tab 7: USER MANAGEMENT */}
+              {cmsTab === 'users' && (
+                <div className="space-y-6 animate-fade-in">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h2 className="text-xl font-bold text-slate-800">Team Roles &amp; Permissions</h2>
+                      <p className="text-xs text-slate-500">Manage administrator profiles, accounts, and CMS interface permissions.</p>
+                    </div>
+
+                    {currentUserRole === 'Super Admin' ? (
+                      <button
+                        onClick={() => {
+                          setEditingUserId(null);
+                          setUserForm({ username: '', role: 'Content Editor', email: '' });
+                          setIsUserModalOpen(true);
+                        }}
+                        className="px-4 py-2 bg-secondary text-white text-xs font-bold rounded-xl shadow-md hover:bg-secondary-container flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-sm">person_add</span> Create User
+                      </button>
+                    ) : (
+                      <span className="text-xs text-slate-400 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200 font-bold italic">Super Admin ONLY</span>
+                    )}
+                  </div>
+
+                  <div className="bg-white border border-slate-200 rounded-[24px] overflow-hidden shadow-sm">
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-left border-collapse">
+                        <thead>
+                          <tr className="bg-slate-50 border-b border-slate-100 text-slate-400 text-[10px] font-bold uppercase tracking-wider">
+                            <th className="p-5">Username</th>
+                            <th className="p-5">Role Assigned</th>
+                            <th className="p-5">E-Mail Address</th>
+                            <th className="p-5 text-center">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 text-xs font-medium text-slate-700">
+                          {users.map((u) => (
+                            <tr key={u.id} className="hover:bg-slate-50/50 transition-colors">
+                              <td className="p-5 font-bold text-slate-800">{u.username}</td>
+                              <td className="p-5">
+                                <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                                  u.role === 'Super Admin' ? 'bg-red-50 text-red-700' :
+                                  u.role === 'Store Manager' ? 'bg-blue-50 text-blue-700' : 'bg-purple-50 text-purple-700'
+                                }`}>
+                                  {u.role}
+                                </span>
+                              </td>
+                              <td className="p-5 text-slate-500 font-mono">{u.email}</td>
+                              <td className="p-5 text-center">
+                                {currentUserRole === 'Super Admin' && u.username !== 'Bharath' ? (
+                                  <button
+                                    onClick={() => handleDeleteUser(u.id)}
+                                    className="p-1.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center justify-center mx-auto cursor-pointer"
+                                    title="Delete user"
+                                  >
+                                    <span className="material-symbols-outlined text-sm">person_remove</span>
+                                  </button>
+                                ) : (
+                                  <span className="text-[10px] text-slate-400 italic">Static/Protected</span>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Tab 8: AUDIT TRAIL LOGS */}
+              {cmsTab === 'logs' && (
+                <div className="space-y-6 animate-fade-in">
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-800">Security Audit Trail</h2>
+                    <p className="text-xs text-slate-500">Real-time chronicle log tracing administrative database commits.</p>
+                  </div>
+
+                  <div className="bg-white border border-slate-200 rounded-[24px] p-6 shadow-sm space-y-4">
+                    <div className="space-y-3">
+                      {auditLogs.map((log) => (
+                        <div key={log.id} className="flex gap-4 items-start text-xs border-b border-slate-100 pb-3 last:border-0">
+                          <span className="font-mono text-slate-400 shrink-0 select-none">
+                            {new Date(log.timestamp).toLocaleString()}
+                          </span>
+                          <span className="px-2 py-0.5 bg-slate-100 rounded text-slate-500 font-bold shrink-0">
+                            {log.user}
+                          </span>
+                          <p className="text-slate-800 font-semibold leading-tight">{log.action}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+            </div>
+          </main>
+
+          {/* Lead notes update popup */}
+          {selectedLead && (
+            <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+              <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-2xl max-w-md w-full relative">
+                <button
+                  onClick={() => setSelectedLead(null)}
+                  className="absolute top-4 right-4 p-1.5 hover:bg-slate-100 rounded-full transition-colors flex items-center cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-sm">close</span>
+                </button>
+                <h4 className="font-bold text-sm text-slate-800 mb-4">Update Customer Lead Details</h4>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 block mb-1">LEAD STATUS</label>
+                    <select
+                      value={selectedLead.status}
+                      onChange={(e) => setSelectedLead({ ...selectedLead, status: e.target.value })}
+                      className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold"
+                    >
+                      <option value="new">New Inquire</option>
+                      <option value="contacted">Contacted / Engaged</option>
+                      <option value="won">Won / Success Purchase</option>
+                      <option value="lost">Lost / Archived</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 block mb-1">FOLLOW-UP NOTES</label>
+                    <textarea
+                      rows="3"
+                      value={selectedLead.notes}
+                      onChange={(e) => setSelectedLead({ ...selectedLead, notes: e.target.value })}
+                      className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold resize-none"
+                    />
+                  </div>
+                  <button
+                    onClick={() => handleUpdateLeadStatus(selectedLead.id, selectedLead.status, selectedLead.notes)}
+                    className="w-full py-3 bg-secondary text-white font-bold rounded-xl shadow-md text-xs hover:bg-secondary-container cursor-pointer"
+                  >
+                    Confirm Changes
+                  </button>
+                </div>
               </div>
             </div>
           )}
-        </section>
+
+          {/* User management creator popup */}
+          {isUserModalOpen && (
+            <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+              <form onSubmit={handleUserSubmit} className="bg-white border border-slate-200 rounded-3xl p-6 shadow-2xl max-w-sm w-full relative space-y-4">
+                <button
+                  type="button"
+                  onClick={() => setIsUserModalOpen(false)}
+                  className="absolute top-4 right-4 p-1.5 hover:bg-slate-100 rounded-full transition-colors flex items-center cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-sm">close</span>
+                </button>
+                <h4 className="font-bold text-sm text-slate-800">Add Team Administrator Account</h4>
+                <div className="space-y-3">
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 block mb-1">USERNAME</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Divya"
+                      value={userForm.username}
+                      onChange={(e) => setUserForm({ ...userForm, username: e.target.value })}
+                      className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 block mb-1">ROLE ASSIGNMENT</label>
+                    <select
+                      value={userForm.role}
+                      onChange={(e) => setUserForm({ ...userForm, role: e.target.value })}
+                      className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold"
+                    >
+                      <option value="Super Admin">Super Admin</option>
+                      <option value="Store Manager">Store Manager</option>
+                      <option value="Content Editor">Content Editor</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 block mb-1">EMAIL ADDRESS</label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="e.g. divya@aonedigital.in"
+                      value={userForm.email}
+                      onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
+                      className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full py-3 bg-secondary text-white font-bold rounded-xl shadow-md text-xs hover:bg-secondary-container cursor-pointer"
+                  >
+                    Register Team Member
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
+
+        </div>
       )}
 
       {/* Product Add/Edit Modal */}
