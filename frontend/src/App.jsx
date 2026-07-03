@@ -272,6 +272,32 @@ export default function App() {
     });
   };
 
+  const [specKey, setSpecKey] = useState('');
+  const [specVal, setSpecVal] = useState('');
+
+  const handleAddSpec = (e) => {
+    e.preventDefault();
+    if (!specKey || !specVal) return;
+    setProductForm({
+      ...productForm,
+      specifications: {
+        ...productForm.specifications,
+        [specKey]: specVal
+      }
+    });
+    setSpecKey('');
+    setSpecVal('');
+  };
+
+  const handleRemoveSpec = (keyToRemove) => {
+    const updated = { ...productForm.specifications };
+    delete updated[keyToRemove];
+    setProductForm({
+      ...productForm,
+      specifications: updated
+    });
+  };
+
   const [uploadingImage, setUploadingImage] = useState(false);
 
   const handleImageUpload = async (e) => {
@@ -2369,6 +2395,65 @@ export default function App() {
                   value={productForm.description}
                   onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
                 />
+              </div>
+
+              {/* Dynamic Specifications Editor */}
+              <div className="space-y-4 border-t border-slate-100 pt-4">
+                <label className="text-ui-label-bold text-on-surface text-xs block font-bold">PRODUCT SPECIFICATIONS</label>
+                
+                {/* Visual List of currently configured specs */}
+                {Object.keys(productForm.specifications || {}).length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                    {Object.entries(productForm.specifications).map(([key, val]) => (
+                      <div key={key} className="flex justify-between items-center text-xs bg-white border border-slate-200/60 rounded-xl py-2 px-3 shadow-sm">
+                        <span className="text-slate-600 font-semibold truncate max-w-[180px]">
+                          <strong>{key}:</strong> {val}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveSpec(key)}
+                          className="text-red-500 hover:text-red-700 transition-colors flex items-center p-1 rounded-full hover:bg-red-50 cursor-pointer"
+                          title="Remove specification"
+                        >
+                          <span className="material-symbols-outlined text-[14px]">delete</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-[10px] text-slate-400 font-medium">No special features or specifications added yet.</p>
+                )}
+
+                {/* Key-Value Inputs row */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <div className="flex-1 space-y-1">
+                    <span className="text-[9px] font-bold text-slate-400 block uppercase">Feature / Parameter</span>
+                    <input
+                      type="text"
+                      placeholder="e.g. Color, RAM, Display"
+                      value={specKey}
+                      onChange={(e) => setSpecKey(e.target.value)}
+                      className="w-full bg-white border border-outline-variant rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:ring-1 focus:ring-secondary"
+                    />
+                  </div>
+                  <div className="flex-1 space-y-1">
+                    <span className="text-[9px] font-bold text-slate-400 block uppercase">Value Description</span>
+                    <input
+                      type="text"
+                      placeholder="e.g. Natural Titanium, 8GB, 6.7 inch OLED"
+                      value={specVal}
+                      onChange={(e) => setSpecVal(e.target.value)}
+                      className="w-full bg-white border border-outline-variant rounded-xl px-3 py-2 text-xs font-semibold outline-none focus:ring-1 focus:ring-secondary"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleAddSpec}
+                    className="sm:self-end px-4 py-2 border border-secondary text-secondary hover:bg-secondary hover:text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1 cursor-pointer h-9 justify-center"
+                  >
+                    <span className="material-symbols-outlined text-[14px]">add</span> Add
+                  </button>
+                </div>
               </div>
 
               <div className="flex gap-4 pt-4 border-t border-outline-variant/30">
