@@ -1389,47 +1389,47 @@ export default function App() {
 
                   {/* Summary Cards */}
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center gap-4 hover:shadow-md transition-all">
-                      <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+                    <div className="bg-white/80 backdrop-blur-xl border border-slate-200/50 rounded-[32px] p-6 shadow-lg flex items-center gap-5 hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
+                      <div className="w-14 h-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center shadow-inner">
                         <span className="material-symbols-outlined text-xl">trending_up</span>
                       </div>
                       <div>
                         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Total Visitors</span>
-                        <h3 className="text-xl font-extrabold text-slate-800 leading-tight">12,450</h3>
+                        <h3 className="text-2xl font-extrabold text-[#141b2b] leading-tight">12,450</h3>
                       </div>
                     </div>
-                    <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center gap-4 hover:shadow-md transition-all">
-                      <div className="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center">
+                    <div className="bg-white/80 backdrop-blur-xl border border-slate-200/50 rounded-[32px] p-6 shadow-lg flex items-center gap-5 hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
+                      <div className="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center shadow-inner">
                         <span className="material-symbols-outlined text-xl">visibility</span>
                       </div>
                       <div>
                         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Product Views</span>
-                        <h3 className="text-xl font-extrabold text-slate-800 leading-tight">4,820</h3>
+                        <h3 className="text-2xl font-extrabold text-[#141b2b] leading-tight">4,820</h3>
                       </div>
                     </div>
-                    <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center gap-4 hover:shadow-md transition-all">
-                      <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center">
+                    <div className="bg-white/80 backdrop-blur-xl border border-slate-200/50 rounded-[32px] p-6 shadow-lg flex items-center gap-5 hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
+                      <div className="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center shadow-inner">
                         <span className="material-symbols-outlined text-xl">group</span>
                       </div>
                       <div>
                         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Leads Received</span>
-                        <h3 className="text-xl font-extrabold text-slate-800 leading-tight">{leads.length}</h3>
+                        <h3 className="text-2xl font-extrabold text-[#141b2b] leading-tight">{leads.length}</h3>
                       </div>
                     </div>
-                    <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm flex items-center gap-4 hover:shadow-md transition-all">
-                      <div className="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center">
+                    <div className="bg-white/80 backdrop-blur-xl border border-slate-200/50 rounded-[32px] p-6 shadow-lg flex items-center gap-5 hover:shadow-xl hover:scale-[1.02] transition-all duration-300">
+                      <div className="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center shadow-inner">
                         <span className="material-symbols-outlined text-xl">inventory_2</span>
                       </div>
                       <div>
                         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Catalog Size</span>
-                        <h3 className="text-xl font-extrabold text-slate-800 leading-tight">{products.length}</h3>
+                        <h3 className="text-2xl font-extrabold text-[#141b2b] leading-tight">{products.length}</h3>
                       </div>
                     </div>
                   </div>
 
                   {/* Audit / Action items grid */}
                   <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2 bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div className="lg:col-span-2 bg-white/80 backdrop-blur-xl border border-slate-200/50 rounded-[32px] p-6 shadow-lg">
                       <h4 className="font-bold text-sm text-slate-800 mb-4">Top Visited Categories</h4>
                       <div className="space-y-4">
                         <div>
@@ -1462,7 +1462,7 @@ export default function App() {
                       </div>
                     </div>
 
-                    <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
+                    <div className="bg-white/80 backdrop-blur-xl border border-slate-200/50 rounded-[32px] p-6 shadow-lg">
                       <h4 className="font-bold text-sm text-slate-800 mb-4">Recent Audit Actions</h4>
                       <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
                         {auditLogs.slice(0, 4).map((log) => (
@@ -1694,7 +1694,7 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div className="bg-white border border-slate-200 rounded-[24px] overflow-hidden shadow-sm">
+                  <div className="bg-white/80 backdrop-blur-xl border border-slate-200/50 rounded-[32px] overflow-hidden shadow-lg">
                     <div className="overflow-x-auto">
                       <table className="w-full text-left border-collapse">
                         <thead>
@@ -1846,7 +1846,7 @@ export default function App() {
                     </button>
                   </div>
 
-                  <div className="bg-white border border-slate-200 rounded-[24px] overflow-hidden shadow-sm">
+                  <div className="bg-white/80 backdrop-blur-xl border border-slate-200/50 rounded-[32px] overflow-hidden shadow-lg">
                     <div className="overflow-x-auto">
                       <table className="w-full text-left border-collapse">
                         <thead>
@@ -2088,7 +2088,7 @@ export default function App() {
                     )}
                   </div>
 
-                  <div className="bg-white border border-slate-200 rounded-[24px] overflow-hidden shadow-sm">
+                  <div className="bg-white/80 backdrop-blur-xl border border-slate-200/50 rounded-[32px] overflow-hidden shadow-lg">
                     <div className="overflow-x-auto">
                       <table className="w-full text-left border-collapse">
                         <thead>
