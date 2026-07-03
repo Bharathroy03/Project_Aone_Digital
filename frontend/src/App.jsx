@@ -806,7 +806,7 @@ export default function App() {
 
               {/* Filter Tabs */}
               <div className="flex gap-2 flex-wrap">
-                {['all', 'smart_phone', 'smart_tv', 'tablet', 'laptop', 'washing_machine', 'refrigerator'].map((filter) => (
+                {['all', 'smart_phone', 'tv', 'tab', 'laptop', 'air_conditioner', 'air_cooler', 'washing_machine', 'home_appliance', 'smart_gadget', 'smart_appliance', 'accessory', 'gadget'].map((filter) => (
                   <button 
                     key={filter} 
                     className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
@@ -817,11 +817,17 @@ export default function App() {
                     onClick={() => setCategoryFilter(filter)}
                   >
                     {filter === 'all' ? 'All' : 
-                     filter === 'smart_phone' ? 'Smart Phones' : 
-                     filter === 'smart_tv' ? 'Smart TV' : 
-                     filter === 'tablet' ? 'Tablet' : 
+                     filter === 'smart_phone' ? 'Smart Phone' : 
+                     filter === 'tv' ? 'TV' : 
+                     filter === 'tab' ? 'Tab' : 
                      filter === 'laptop' ? 'Laptop' : 
-                     filter === 'washing_machine' ? 'Washing Machine' : 'Refrigerator'}
+                     filter === 'air_conditioner' ? 'Air Conditioner' : 
+                     filter === 'air_cooler' ? 'Air Cooler' : 
+                     filter === 'washing_machine' ? 'Washing Machine' : 
+                     filter === 'home_appliance' ? 'Home Appliances' : 
+                     filter === 'smart_gadget' ? 'Smart Gadgets' : 
+                     filter === 'smart_appliance' ? 'Smart Appliances' : 
+                     filter === 'accessory' ? 'Accessories' : 'Gadgets'}
                   </button>
                 ))}
               </div>
@@ -2320,12 +2326,18 @@ export default function App() {
                     value={productForm.category}
                     onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
                   >
-                    <option value="smart_phone">Smart Phones</option>
-                    <option value="smart_tv">Smart TV</option>
-                    <option value="tablet">Tablet</option>
+                    <option value="smart_phone">Smart Phone</option>
+                    <option value="tv">TV</option>
+                    <option value="tab">Tab</option>
                     <option value="laptop">Laptop</option>
+                    <option value="air_conditioner">Air Conditioner</option>
+                    <option value="air_cooler">Air Cooler</option>
                     <option value="washing_machine">Washing Machine</option>
-                    <option value="refrigerator">Refrigerator</option>
+                    <option value="home_appliance">Home Appliances</option>
+                    <option value="smart_gadget">Smart Gadgets</option>
+                    <option value="smart_appliance">Smart Appliances</option>
+                    <option value="accessory">Accessories</option>
+                    <option value="gadget">Gadgets</option>
                   </select>
                 </div>
                 <div className="space-y-2">
