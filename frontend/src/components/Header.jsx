@@ -72,7 +72,7 @@ export default function Header({ cartCount, onCartClick, settings }) {
                 key={item.name}
                 href={item.href}
                 onClick={() => setActiveLink(item.name)}
-                className={`relative pb-1 font-ui-label-md text-sm font-semibold tracking-wide transition-all duration-300 ${
+                className={`relative pb-1 font-body-md text-sm font-semibold tracking-wide transition-all duration-300 ${
                   isActive 
                     ? 'text-secondary font-bold' 
                     : 'text-on-surface hover:text-secondary'
