@@ -24,7 +24,7 @@ export default function Header({ cartCount, onCartClick, settings }) {
     <header 
       className={`fixed z-50 left-1/2 -translate-x-1/2 transition-all duration-500 ease-out ${
         scrolled 
-          ? 'top-2 w-[92%] md:w-[85%] max-w-container-max bg-white/90 backdrop-blur-xl border border-slate-200/50 shadow-xl rounded-2xl py-3 px-6 h-16' 
+          ? 'top-4 w-[92%] lg:w-[1200px] bg-white/90 backdrop-blur-xl border border-slate-200/50 shadow-2xl rounded-full py-3 px-8 h-16' 
           : 'top-0 w-full bg-white/40 backdrop-blur-md border-b border-slate-100/30 shadow-none py-5 px-margin-mobile md:px-margin-desktop h-24'
       }`}
     >
