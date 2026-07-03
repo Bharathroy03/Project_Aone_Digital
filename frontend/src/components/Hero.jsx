@@ -1,10 +1,27 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 export default function Hero({ onExploreClick }) {
+  const [bgImg, setBgImg] = useState('/images/hero-bg.png');
+
+  useEffect(() => {
+    const img = new Image();
+    img.src = '/images/hero-bg.png';
+    img.onerror = () => {
+      // Fallback to high-quality electronics showroom if local image fails
+      setBgImg('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1920&q=80');
+    };
+  }, []);
+
   return (
-    <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-white">
-      <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop grid grid-cols-1 lg:grid-cols-2 gap-gutter items-center py-16">
-        <div className="z-10 reveal active">
+    <section 
+      className="relative min-h-[90vh] flex items-center justify-start overflow-hidden bg-cover bg-center"
+      style={{ backgroundImage: `url('${bgImg}')` }}
+    >
+      {/* Light gradient overlay that matches the theme background (#f9f9ff) for perfect readability */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#f9f9ff] via-[#f9f9ff]/90 to-[#f9f9ff]/10 z-0"></div>
+
+      <div className="relative z-10 w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-24">
+        <div className="max-w-2xl reveal active">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-secondary-fixed text-on-secondary-fixed rounded-full mb-6">
             <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
             <span className="text-ui-caption font-ui-label-bold">Authorized Premium Retailer</span>
@@ -43,19 +60,6 @@ export default function Hero({ onExploreClick }) {
               <span className="text-ui-caption font-ui-label-bold">Fast Delivery</span>
             </div>
           </div>
-        </div>
-        
-        <div className="relative flex justify-center items-center reveal active" style={{ transitionDelay: '200ms' }}>
-          <div className="absolute inset-0 bg-secondary/5 rounded-full blur-3xl transform scale-150"></div>
-          <img 
-            alt="Premium Electronics Showcase" 
-            className="relative z-10 w-full max-w-lg object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700" 
-            src="/images/hero-bg.png"
-            onError={(e) => {
-              // Fallback if the user's hero-bg.png was not loaded or is a different file
-              e.target.src = "https://lh3.googleusercontent.com/aida/AP1WRLsElqfFIIznj-aOe4E8QXrX5bWMrp6c1NuD9KZilU6CxbxNvTJ5ZhXRXlMWLDUSSwtn6oZTol5sbCgiITXUai9rAXewzGtRcgYlD6bl2cj42WhOfYr9DdxA0iIo-VGW7szXI9h_6uB4PkzcBjZnjJVcWVq2x-SlM6InWAV-U4jsbL5Fp4muVi3RLiY1ayhooSUY-o_FGH00HEd7E-YIXWPAIFdLv9HOelyoR7fbTLaj7aq6J3U6bNdxy50";
-            }}
-          />
         </div>
       </div>
     </section>
