@@ -26,11 +26,11 @@ export default function Hero({ onExploreClick }) {
             <span className="material-symbols-outlined text-sm" style={{ fontVariationSettings: "'FILL' 1" }}>verified</span>
             <span className="text-ui-caption font-ui-label-bold">Authorized Premium Retailer</span>
           </div>
-          <h1 className="font-display-lg-mobile md:text-display-lg text-primary mb-6">
-            Discover the Latest Smartphones &amp; Home Appliances at <span className="text-secondary">Unbeatable Prices</span>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight text-primary mb-5 leading-tight">
+            Smart Tech. <span className="text-secondary font-semibold">Modern Living.</span>
           </h1>
-          <p className="text-body-lg text-text-secondary mb-10 max-w-xl">
-            Explore premium smartphones, smart TVs, laptops, and more with easy financing and nationwide delivery at Aone Digital.
+          <p className="text-base md:text-lg text-text-secondary mb-8 max-w-lg leading-relaxed">
+            Curated smartphones and premium smart appliances designed to elevate your home.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <button 
