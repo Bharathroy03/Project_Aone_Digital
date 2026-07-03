@@ -1218,7 +1218,7 @@ export default function App() {
 
       {/* Admin Login View */}
       {view === 'admin-login' && (
-        <section className="max-w-md mx-auto my-36 p-8 md:p-12 bg-white/70 backdrop-blur-xl border border-slate-200/50 rounded-[32px] shadow-2xl w-full px-margin-mobile">
+        <section className="max-w-md mx-auto my-36 p-8 md:p-12 bg-white/70 backdrop-blur-xl border border-slate-200/50 rounded-[32px] shadow-2xl w-full px-margin-mobile" style={{ fontFamily: 'var(--font-ui)' }}>
           <div className="text-center mb-8">
             <h2 className="font-headline-md text-on-surface mb-2">Admin Portal</h2>
             <p className="text-sm text-text-secondary">Please log in to manage your inventory.</p>
@@ -1274,7 +1274,7 @@ export default function App() {
 
       {/* Redesigned Enterprise-Grade CMS Dashboard */}
       {view === 'admin-dashboard' && (
-        <div className="min-h-screen bg-[#f9f9ff] flex text-[#141b2b] font-sans z-[110] relative">
+        <div className="min-h-screen bg-[#f9f9ff] flex text-[#141b2b] z-[110] relative" style={{ fontFamily: 'var(--font-ui)' }}>
           
           {/* Sidebar Menu */}
           <aside className="w-64 bg-white text-slate-700 flex flex-col fixed inset-y-0 left-0 z-30 shadow-lg border-r border-slate-200/60">
