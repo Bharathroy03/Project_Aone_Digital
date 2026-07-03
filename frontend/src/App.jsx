@@ -464,24 +464,62 @@ export default function App() {
     document.body.removeChild(link);
   };
 
-  const handleMediaUpload = (e) => {
-    e.preventDefault();
-    const fileName = prompt("Enter simulated filename or paste image URL directly:");
-    if (!fileName) return;
+  const handleMediaUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-    fetch('/api/media/upload', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name: fileName.substring(fileName.lastIndexOf('/') + 1) || fileName,
-        url: fileName.startsWith('http') ? fileName : "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=600&q=80",
-        size: "210 KB",
-        file_type: "image/png"
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+      const filePath = `media/${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from('product-images')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('product-images')
+        .getPublicUrl(filePath);
+
+      const response = await fetch('/api/media/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: file.name,
+          url: publicUrl,
+          size: `${(file.size / 1024).toFixed(0)} KB`,
+          file_type: file.type
+        })
+      });
+
+      if (!response.ok) throw new Error('Failed to index file in database');
+      fetchMedia();
+      alert('Media asset uploaded and indexed successfully!');
+    } catch (err) {
+      console.error('Media upload error:', err);
+      // Fallback
+      fetch('/api/media/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: file.name,
+          url: 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=600&q=80',
+          size: `${(file.size / 1024).toFixed(0)} KB`,
+          file_type: file.type
+        })
       })
-    })
-      .then((res) => res.json())
-      .then(() => fetchMedia())
-      .catch((err) => alert(err.message));
+        .then(() => {
+          fetchMedia();
+          alert('Supabase Storage Fallback: Mock media asset indexed in dashboard.');
+        });
+    }
   };
 
   const handleDeleteMedia = (mediaId) => {
@@ -1698,12 +1736,17 @@ export default function App() {
                       <p className="text-xs text-slate-500">Upload, reuse, catalog, and query website graphics, files, and icons.</p>
                     </div>
                     
-                    <button 
-                      onClick={handleMediaUpload}
+                    <label 
                       className="px-4 py-2 bg-secondary text-white text-xs font-bold rounded-xl shadow-md hover:bg-secondary-container flex items-center gap-1.5 cursor-pointer"
                     >
                       <span className="material-symbols-outlined text-sm">cloud_upload</span> Upload File
-                    </button>
+                      <input 
+                        type="file" 
+                        accept="image/*"
+                        onChange={handleMediaUpload}
+                        className="hidden"
+                      />
+                    </label>
                   </div>
 
                   {/* Media Grid */}
