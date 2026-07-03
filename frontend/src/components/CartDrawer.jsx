@@ -1,5 +1,4 @@
 import React from 'react';
-import { X, Trash2, ShoppingBag } from 'lucide-react';
 
 export default function CartDrawer({ isOpen, onClose, cartItems, onUpdateQuantity, onRemove, onCheckout }) {
   const total = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -10,19 +9,22 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onUpdateQuantit
       <div className={`cart-drawer ${isOpen ? 'open' : ''}`}>
         <div className="cart-header">
           <h2 className="cart-title">
-            <ShoppingBag size={22} style={{ color: '#6366f1' }} /> Your Cart
+            <span className="material-symbols-outlined text-secondary text-2xl">shopping_bag</span> Your Cart
           </h2>
-          <button className="icon-btn" onClick={onClose} aria-label="Close cart">
-            <X size={20} />
+          <button className="p-2 hover:bg-slate-100 rounded-full transition-colors" onClick={onClose} aria-label="Close cart">
+            <span className="material-symbols-outlined">close</span>
           </button>
         </div>
 
         <div className="cart-items-container">
           {cartItems.length === 0 ? (
             <div className="empty-cart-message">
-              <ShoppingBag size={48} style={{ strokeWidth: 1.2, color: 'var(--text-muted)' }} />
-              <p>Your shopping cart is empty.</p>
-              <button className="btn btn-secondary" style={{ padding: '10px 20px', borderRadius: '15px' }} onClick={onClose}>
+              <span className="material-symbols-outlined text-5xl text-slate-300">shopping_cart_off</span>
+              <p className="font-ui-label-md">Your shopping cart is empty.</p>
+              <button 
+                className="px-6 py-2.5 bg-slate-100 text-slate-800 text-xs font-bold rounded-xl hover:bg-slate-200 transition-colors" 
+                onClick={onClose}
+              >
                 Continue Shopping
               </button>
             </div>
@@ -48,7 +50,7 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onUpdateQuantit
                   </div>
                 </div>
                 <button className="remove-item-btn" onClick={() => onRemove(item.id)} aria-label="Remove item">
-                  <Trash2 size={18} />
+                  <span className="material-symbols-outlined text-lg">delete</span>
                 </button>
               </div>
             ))
@@ -61,7 +63,10 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onUpdateQuantit
               <span className="total-label">Subtotal:</span>
               <span className="total-value">${total.toFixed(2)}</span>
             </div>
-            <button className="btn btn-primary" style={{ width: '100%', borderRadius: '16px' }} onClick={onCheckout}>
+            <button 
+              className="w-full py-4 bg-secondary text-white font-bold rounded-xl shadow-lg hover:bg-secondary-container transition-all text-sm" 
+              onClick={onCheckout}
+            >
               Proceed to Checkout
             </button>
           </div>

@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"/><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">try{
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#f9f9ff",
+                        "surface-container-low": "#f1f3ff",
+                        "error": "#ba1a1a",
+                        "brand-accent-glow": "#3B82F6",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-tertiary-container": "#818486",
+                        "surface-bright": "#f9f9ff",
+                        "status-success": "#22C55E",
+                        "surface-tint": "#565e74",
+                        "text-secondary": "#475569",
+                        "on-background": "#141b2b",
+                        "secondary-fixed-dim": "#b4c5ff",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed": "#00174b",
+                        "secondary-fixed": "#dbe1ff",
+                        "error-container": "#ffdad6",
+                        "primary": "#000000",
+                        "on-tertiary": "#ffffff",
+                        "inverse-primary": "#bec6e0",
+                        "on-surface": "#141b2b",
+                        "on-primary-fixed": "#131b2e",
+                        "surface-variant": "#dce2f7",
+                        "inverse-on-surface": "#edf0ff",
+                        "primary-fixed-dim": "#bec6e0",
+                        "outline-variant": "#c6c6cd",
+                        "on-secondary-fixed-variant": "#003ea8",
+                        "on-surface-variant": "#45464d",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "outline": "#76777d",
+                        "surface": "#f9f9ff",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "tertiary": "#000000",
+                        "secondary-container": "#316bf3",
+                        "surface-container-high": "#e1e8fd",
+                        "tertiary-fixed": "#e0e3e5",
+                        "on-primary-container": "#7c839b",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "legacy-red": "#BE1E2D",
+                        "secondary": "#0051d5",
+                        "on-secondary-container": "#fefcff",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#d3daef",
+                        "on-error": "#ffffff",
+                        "tertiary-container": "#191c1e",
+                        "on-tertiary-fixed": "#191c1e",
+                        "inverse-surface": "#293040",
+                        "surface-container-highest": "#dce2f7",
+                        "surface-container": "#e9edff",
+                        "primary-container": "#131b2e",
+                        "primary-fixed": "#dae2fd"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-desktop": "64px",
+                        "gutter": "24px",
+                        "base": "8px",
+                        "margin-mobile": "20px",
+                        "container-max": "1280px",
+                        "section-gap": "120px"
+                    },
+                    "fontFamily": {
+                        "ui-label-bold": ["Libre Caslon Text"],
+                        "title-sm": ["Libre Caslon Text"],
+                        "display-lg-mobile": ["Libre Caslon Text"],
+                        "ui-caption": ["Libre Caslon Text"],
+                        "ui-label-md": ["Libre Caslon Text"],
+                        "display-lg": ["Libre Caslon Text"],
+                        "headline-md-mobile": ["Libre Caslon Text"],
+                        "headline-md": ["Libre Caslon Text"],
+                        "body-lg": ["Libre Caslon Text"],
+                        "body-md": ["Libre Caslon Text"]
+                    },
+                    "fontSize": {
+                        "ui-label-bold": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "700"}],
+                        "title-sm": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                        "display-lg-mobile": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "ui-caption": ["12px", {"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                        "ui-label-md": ["14px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md-mobile": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "headline-md": ["30px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    }catch(_e){}</script>
+<style>
+    .glass {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .dark .glass {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s ease-out;
+    }
+    .reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+    .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    @keyframes scroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+    .brand-carousel-track {
+        display: flex;
+        width: max-content;
+        animation: scroll 30s linear infinite;
+    }
+</style>
+</head><body class="bg-background text-on-background font-body-md overflow-x-hidden">
+<!-- Premium Navigation -->
+<header class="fixed top-0 w-full z-50 bg-white/70 dark:bg-black/70 backdrop-blur-xl border-b border-white/40 shadow-sm">
+<nav class="flex justify-between items-center h-20 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-secondary text-2xl" data-original-icon="grid_view">grid_view</span>
+<span class="font-display-lg text-2xl md:text-display-lg tracking-tighter text-on-surface">Hreeem Stores</span>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-secondary font-bold border-b-2 border-secondary pb-1 font-ui-label-md text-ui-label-md" href="#">Home</a>
+<a class="text-on-surface font-ui-label-md text-ui-label-md hover:text-secondary transition-colors" href="#categories">Products</a>
+<a class="text-on-surface font-ui-label-md text-ui-label-md hover:text-secondary transition-colors" href="#offers">Offers</a>
+<a class="text-on-surface font-ui-label-md text-ui-label-md hover:text-secondary transition-colors" href="#contact">Contact</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-surface-container-low rounded-full transition-colors">
+<span class="material-symbols-outlined text-secondary">shopping_bag</span>
+</button>
+</div>
+</nav>
+</header>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden bg-white">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop grid grid-cols-1 lg:grid-cols-2 gap-gutter items-center py-16">
+<div class="z-10 reveal active">
+<div class="inline-flex items-center gap-2 px-4 py-2 bg-secondary-fixed text-on-secondary-fixed rounded-full mb-6">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-ui-caption font-ui-label-bold">Authorized Premium Retailer</span>
+</div>
+<h1 class="font-display-lg-mobile md:text-display-lg text-primary mb-6">
+                        Discover the Latest Smartphones &amp; Home Appliances at <span class="text-secondary">Unbeatable Prices</span>
+</h1>
+<p class="text-body-lg text-text-secondary mb-10 max-w-xl">
+                        Explore premium smartphones, smart TVs, laptops, and more with easy financing and nationwide delivery at Hreeem Stores.
+                    </p>
+<div class="flex flex-col sm:flex-row gap-4">
+<a class="px-8 py-4 bg-gradient-to-r from-secondary to-secondary-container text-white font-ui-label-bold rounded-xl shadow-lg hover:shadow-secondary/20 transition-all text-center" href="#categories">
+                            Explore Products
+                        </a>
+<a class="px-8 py-4 border border-outline text-on-surface font-ui-label-bold rounded-xl hover:bg-surface-container-low transition-all text-center" href="#contact">
+                            Contact Us
+                        </a>
+</div>
+<div class="mt-12 grid grid-cols-2 sm:grid-cols-3 gap-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-status-success">check_circle</span>
+<span class="text-ui-caption font-ui-label-bold">100% Genuine</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-status-success">shield</span>
+<span class="text-ui-caption font-ui-label-bold">Full Warranty</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-status-success">local_shipping</span>
+<span class="text-ui-caption font-ui-label-bold">Fast Delivery</span>
+</div>
+</div>
+</div>
+<div class="relative flex justify-center items-center reveal active" style="transition-delay: 200ms;">
+<div class="absolute inset-0 bg-secondary/5 rounded-full blur-3xl transform scale-150"></div>
+<img alt="Premium Electronics Showcase" class="relative z-10 w-full max-w-lg object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700" src="https://lh3.googleusercontent.com/aida/AP1WRLsElqfFIIznj-aOe4E8QXrX5bWMrp6c1NuD9KZilU6CxbxNvTJ5ZhXRXlMWLDUSSwtn6oZTol5sbCgiITXUai9rAXewzGtRcgYlD6bl2cj42WhOfYr9DdxA0iIo-VGW7szXI9h_6uB4PkzcBjZnjJVcWVq2x-SlM6InWAV-U4jsbL5Fp4muVi3RLiY1ayhooSUY-o_FGH00HEd7E-YIXWPAIFdLv9HOelyoR7fbTLaj7aq6J3U6bNdxy50"/>
+</div>
+</div>
+</section>
+<!-- Brand Showcase -->
+<section class="py-16 bg-surface-container-low overflow-hidden">
+<div class="mb-8 text-center px-margin-mobile">
+<h3 class="font-ui-label-bold text-on-surface-variant uppercase tracking-widest text-ui-caption">Global Brand Partners</h3>
+</div>
+<div class="brand-carousel-track">
+<div class="flex items-center justify-center w-[250px] grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all font-display-lg text-2xl text-on-surface">APPLE</div>
+<div class="flex items-center justify-center w-[250px] grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all font-display-lg text-2xl text-on-surface">SAMSUNG</div>
+<div class="flex items-center justify-center w-[250px] grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all font-display-lg text-2xl text-on-surface">SONY</div>
+<div class="flex items-center justify-center w-[250px] grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all font-display-lg text-2xl text-on-surface">LG</div>
+<div class="flex items-center justify-center w-[250px] grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all font-display-lg text-2xl text-on-surface">VIVO</div>
+<div class="flex items-center justify-center w-[250px] grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all font-display-lg text-2xl text-on-surface">WHIRLPOOL</div>
+<div class="flex items-center justify-center w-[250px] grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all font-display-lg text-2xl text-on-surface">DYSON</div>
+<!-- Duplicate for seamless loop -->
+<div class="flex items-center justify-center w-[250px] grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all font-display-lg text-2xl text-on-surface">APPLE</div>
+<div class="flex items-center justify-center w-[250px] grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all font-display-lg text-2xl text-on-surface">SAMSUNG</div>
+<div class="flex items-center justify-center w-[250px] grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all font-display-lg text-2xl text-on-surface">SONY</div>
+<div class="flex items-center justify-center w-[250px] grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all font-display-lg text-2xl text-on-surface">LG</div>
+<div class="flex items-center justify-center w-[250px] grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all font-display-lg text-2xl text-on-surface">VIVO</div>
+<div class="flex items-center justify-center w-[250px] grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all font-display-lg text-2xl text-on-surface">WHIRLPOOL</div>
+<div class="flex items-center justify-center w-[250px] grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all font-display-lg text-2xl text-on-surface">DYSON</div>
+</div>
+</section>
+<!-- Categories Section -->
+<section class="py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto" id="categories">
+<div class="text-center mb-16 reveal active">
+<h2 class="font-headline-md-mobile md:text-headline-md text-on-surface mb-4">Shop by Category</h2>
+<div class="w-20 h-1 bg-secondary mx-auto rounded-full"></div>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+<div class="glass p-6 rounded-3xl flex flex-col items-center text-center hover:shadow-xl hover:translate-y-[-8px] transition-all cursor-pointer reveal active">
+<div class="w-20 h-20 mb-4 bg-white rounded-2xl flex items-center justify-center shadow-inner overflow-hidden">
+<img class="w-16 h-16 object-contain" data-alt="Smartphone icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdOdknTPsNr5zyg78-8NVthlIVquiPV6mAdXyjEs_IAsUWku7v8Y7REvjsFjFEXk7YQcQOd_Ql4B_14hyS53YG2UcmbzZ6a6wpkHkmoDGI7bDYWHcgdOLYAGOC3U_tkiJWOS4qQD_g5rB6td-CkJ00EKfHMfuqpCrCxjAc6jWZJVNmO0aJTXoYlpg7DzeLNII-iHCgzAWdP1B8LFZp-GJxmZI5hEXp0-LunSvkRzDQDkxpQV33ed4Y"/>
+</div>
+<span class="font-ui-label-bold text-on-surface">Smartphones</span>
+</div>
+<div class="glass p-6 rounded-3xl flex flex-col items-center text-center hover:shadow-xl hover:translate-y-[-8px] transition-all cursor-pointer reveal active" style="transition-delay: 100ms;">
+<div class="w-20 h-20 mb-4 bg-white rounded-2xl flex items-center justify-center shadow-inner overflow-hidden">
+<img class="w-16 h-16 object-contain" data-alt="TV icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyKPkk8V2_k7JnwBsBwKRADfYVOxj44Lk5wJ4dvr_K8TjCTF9fZVjJ5H1RFMiHYbQYfyDdXOYjM46qOu_IOxiJ_ebZXr2Oh3dsWgaO_fFQ3iaDg-S4_webQ3z83uACNtVe0cVuGh7m7Cc0b3b8_ggpbpXMQN-9THokwkdPYMokaNYdcfb7hekrxrFvSVOd54Skbm_8x9o4odnxM8oa8ENIfVkTZvZ1PfIknZYCRZRTPd08neDz2Xql"/>
+</div>
+<span class="font-ui-label-bold text-on-surface">Smart TVs</span>
+</div>
+<div class="glass p-6 rounded-3xl flex flex-col items-center text-center hover:shadow-xl hover:translate-y-[-8px] transition-all cursor-pointer reveal active" style="transition-delay: 200ms;">
+<div class="w-20 h-20 mb-4 bg-white rounded-2xl flex items-center justify-center shadow-inner overflow-hidden">
+<img class="w-16 h-16 object-contain" data-alt="Laptop icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBQGexpsqIjuOeeJiyayAiqB33_ebDyBWp5Pa7W1zuUNDwDiAUIUU2J3IaGXssudZCOyQvCZ_3ir9YQWcWTnquYw8nKEAvNhq3JVWOFkPFyJWTwVqbEh-jkbTE6acYOeehpUlZtqMsgh2eaeCktWrIib8DUYdH7xxLsTJPhM4bPj2MNO5puIsHEs_fsP9LOZSlavdIJ8nHvjH2B3B7C_S4QF0PUdbJXQU6aqZrzP7uYREs6yQGiRLfn"/>
+</div>
+<span class="font-ui-label-bold text-on-surface">Laptops</span>
+</div>
+<div class="glass p-6 rounded-3xl flex flex-col items-center text-center hover:shadow-xl hover:translate-y-[-8px] transition-all cursor-pointer reveal active" style="transition-delay: 300ms;">
+<div class="w-20 h-20 mb-4 bg-white rounded-2xl flex items-center justify-center shadow-inner overflow-hidden">
+<img class="w-16 h-16 object-contain" data-alt="Refrigerator icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClrCQkqLngs6_6g762UKkHunwxW-zNoHZM3EEzYuDu7Wd4mHbL1Ar5HpBkRyXWGWaEHFatxeSa8GBc0YbK5_rQLpFM_gF_rQQnrXv8lOXBNDQvfpWSpyEle8xclSL-ClFrOpYKota3iGMpWmy1E3kMpOD3x6-853hpV9FucOMuLLiikBS350nEV0AjJK8Xi9K7D52vK30NQoQGG0vSZGYaFLi8Dz79jV56dH13uEub2yA0zT07caxb"/>
+</div>
+<span class="font-ui-label-bold text-on-surface">Refrigerators</span>
+</div>
+<div class="glass p-6 rounded-3xl flex flex-col items-center text-center hover:shadow-xl hover:translate-y-[-8px] transition-all cursor-pointer reveal active" style="transition-delay: 400ms;">
+<div class="w-20 h-20 mb-4 bg-white rounded-2xl flex items-center justify-center shadow-inner overflow-hidden">
+<img class="w-16 h-16 object-contain" data-alt="Washing machine icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4qI5XP952eDDSBpJ8W2_d8-Gopk_8xouu2K4NiDkl-2orsIeD3KKknlepeh2BipqSs4tDujYLn9LqOOVw0ll9qvMXMUUePMSLY5OUzMMHCLOH69WOBiZYez7H2tlJEEuhbtPhN78LAOJmdShnvDqvuyBatKpRMLnJxOYbu-6V4haRb5U4-g8Q72qK_vYhNb-rfRTtdZ9YASiJemA1MoqIenfQpfpPWRzyKDZVY8iIJ_gVlRjCYjyk"/>
+</div>
+<span class="font-ui-label-bold text-on-surface">Washing Machines</span>
+</div>
+<div class="glass p-6 rounded-3xl flex flex-col items-center text-center hover:shadow-xl hover:translate-y-[-8px] transition-all cursor-pointer reveal active" style="transition-delay: 150ms;">
+<div class="w-20 h-20 mb-4 bg-white rounded-2xl flex items-center justify-center shadow-inner overflow-hidden">
+<img class="w-16 h-16 object-contain" data-alt="Air conditioner icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFLV2Bn1LCS4LeJdPrZjQFpL-cFBF5IlVO8WeAyjTlP9TGE8lmoGcGpsOVTisNPqfBc7K_Pg-8pLRJHIO3I1JJ4F4YagWzkmthKDaQ52toeTvkUEUnsqRAFQ3SOGVPXi_6XoCEDJB81Pzrlid_NM53ufkJ9_0-wqIgthMiQxyMo7X4l6TEplnTKf1yPsSipj0LysNeazfG_5niMkPqnOQK-PZIcAHHTuR3jQ8m-Emu_beOmdYeSBGg"/>
+</div>
+<span class="font-ui-label-bold text-on-surface">Air Conditioners</span>
+</div>
+<div class="glass p-6 rounded-3xl flex flex-col items-center text-center hover:shadow-xl hover:translate-y-[-8px] transition-all cursor-pointer reveal active" style="transition-delay: 250ms;">
+<div class="w-20 h-20 mb-4 bg-white rounded-2xl flex items-center justify-center shadow-inner overflow-hidden">
+<img class="w-16 h-16 object-contain" data-alt="Kitchen appliances icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqpkMQ4x4xAHAHf7jG8xC95joUBeR8lkl6pWge5_SSu3DPsnopDaxQg9j9DreXNVwpoQ7OMqOe2ti9jatOT8_gmxvvGEz_AoMLFbK_Py-knb7RjgWiLxtDdl64cTe1msLscds75A3DwwkwmLAw9x1jq1H21i6Ne0v_kKLQhS7fxj1xdKQF7wEXZT4j1xJt7TpGeBByQTtbB6B94GYjXAApiukT3UoAUz4S27t0LfDtqzP0Qy6_ZZF_"/>
+</div>
+<span class="font-ui-label-bold text-on-surface">Kitchen Appliances</span>
+</div>
+<div class="glass p-6 rounded-3xl flex flex-col items-center text-center hover:shadow-xl hover:translate-y-[-8px] transition-all cursor-pointer reveal active" style="transition-delay: 350ms;">
+<div class="w-20 h-20 mb-4 bg-white rounded-2xl flex items-center justify-center shadow-inner overflow-hidden">
+<img class="w-16 h-16 object-contain" data-alt="Smart watch icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDJ9vxdHx3uFJqLuLR4yokiWkH30K55FCOTguzPSZVr9itxpaveGYUh4eGmju7TrNt9KjwE-S7Lqv0DTHXwTUr5fRl66gfISVNCr9Ko7rXehK3ByBI6bBzinUSRLRHt1ckBWq8DBEC3jLrxuCCn0qLe2RU6jlSDCRew2qcX-_S26ZNHacsiT4rK5ezCDdKmTPEnnj8G_u4hapqqabQP9Ij8L45wvj-XbU46c-BX1ogiCk-Yy6v9DpzB"/>
+</div>
+<span class="font-ui-label-bold text-on-surface">Smart Watches</span>
+</div>
+<div class="glass p-6 rounded-3xl flex flex-col items-center text-center hover:shadow-xl hover:translate-y-[-8px] transition-all cursor-pointer reveal active" style="transition-delay: 450ms;">
+<div class="w-20 h-20 mb-4 bg-white rounded-2xl flex items-center justify-center shadow-inner overflow-hidden">
+<img class="w-16 h-16 object-contain" data-alt="Audio accessories icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAMDtz6_ioW77EzTq1wqi7Alr3mez84oyeb0685Rnq51NQ2ybHBvtmWYAYfj0iKL3ilZMMdTS0-S4zxfjIWeuTLR1ppv3gofBZoX4rWoH87XXxAM6qo15x6x513WAcQ5x4c3M-26IXX3XoWkzhKeyd5neLpzIQLaTgYV0MiFezTHQdwhk_0Tu7Qn5aE_3Simb-spWVTBzJzageydAZl4ZZ6yyyIExDULIdzuhONYxLNPMxQLysSVYtI"/>
+</div>
+<span class="font-ui-label-bold text-on-surface">Audio Accessories</span>
+</div>
+<div class="glass p-6 rounded-3xl flex flex-col items-center text-center hover:shadow-xl hover:translate-y-[-8px] transition-all cursor-pointer reveal active" style="transition-delay: 550ms;">
+<div class="w-20 h-20 mb-4 bg-white rounded-2xl flex items-center justify-center shadow-inner overflow-hidden">
+<img class="w-16 h-16 object-contain" data-alt="Robot cleaner icon" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEqY5LrxZut0FWfW2rFzKauKChOttxrH1QNf8EOLYzTivwNfrVNCJ3p5Z0lXNFb36PlBbzt2Kw8D-LHyvvaDP2KeZ5vJWniDlsLeFfq-W27m5EOBT2sW4lwFmqQkZ-uuw6qj8_kSFpeYkvH1SSX688q69nbb4Isni7GcPSIByOVK5HYvnDn9j3DusbAYRfNz0RtK-wEcxiwf0gvuec1jHTc1qHHS-z0qS60p_CHQVOHD4NDKRiyujI"/>
+</div>
+<span class="font-ui-label-bold text-on-surface">Robot Cleaners</span>
+</div>
+</div>
+</section>
+<!-- Featured Offers -->
+<section class="bg-primary-container py-section-gap relative overflow-hidden" id="offers">
+<div class="absolute top-0 right-0 w-96 h-96 bg-secondary/10 blur-[120px] rounded-full"></div>
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop relative z-10">
+<div class="text-center mb-16 reveal active">
+<h2 class="font-headline-md text-white mb-4">Exclusive Retail Offers</h2>
+<p class="text-on-primary-container font-ui-label-md">Maximum benefits on every purchase you make at Hreeem Stores.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="p-8 bg-white/5 border border-white/10 rounded-[32px] hover:bg-white/10 transition-all group reveal active">
+<span class="material-symbols-outlined text-4xl text-secondary mb-6 block group-hover:scale-110 transition-transform">credit_card</span>
+<h4 class="text-white font-title-sm mb-2">No Cost EMI</h4>
+<p class="text-on-primary-container text-ui-label-md">Pay over 6-24 months with absolutely 0% interest on major credit cards.</p>
+</div>
+<div class="p-8 bg-white/5 border border-white/10 rounded-[32px] hover:bg-white/10 transition-all group reveal active" style="transition-delay: 100ms;">
+<span class="material-symbols-outlined text-4xl text-secondary mb-6 block group-hover:scale-110 transition-transform">currency_exchange</span>
+<h4 class="text-white font-title-sm mb-2">Exchange Bonus</h4>
+<p class="text-on-primary-container text-ui-label-md">Get up to ₹15,000 extra value when you trade in your old devices.</p>
+</div>
+<div class="p-8 bg-white/5 border border-white/10 rounded-[32px] hover:bg-white/10 transition-all group reveal active" style="transition-delay: 200ms;">
+<span class="material-symbols-outlined text-4xl text-secondary mb-6 block group-hover:scale-110 transition-transform">payments</span>
+<h4 class="text-white font-title-sm mb-2">Instant Cashback</h4>
+<p class="text-on-primary-container text-ui-label-md">Avail up to 10% instant discount on HDFC, ICICI, and SBI bank cards.</p>
+</div>
+<div class="p-8 bg-white/5 border border-white/10 rounded-[32px] hover:bg-white/10 transition-all group reveal active" style="transition-delay: 300ms;">
+<span class="material-symbols-outlined text-4xl text-secondary mb-6 block group-hover:scale-110 transition-transform">school</span>
+<h4 class="text-white font-title-sm mb-2">Student Offers</h4>
+<p class="text-on-primary-container text-ui-label-md">Extra 5% discount for students on Laptops and Tablets with valid ID.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Why Choose Us -->
+<section class="py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-section-gap items-center">
+<div class="reveal active">
+<h2 class="font-headline-md text-on-surface mb-8">Redefining the Electronics Shopping Experience</h2>
+<div class="space-y-8">
+<div class="flex gap-6">
+<div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">workspace_premium</span>
+</div>
+<div>
+<h4 class="font-title-sm text-on-surface mb-2">Authorized Retailer</h4>
+<p class="text-text-secondary">We are certified partners for Apple, Samsung, Sony, and LG, ensuring genuine products every time.</p>
+</div>
+</div>
+<div class="flex gap-6">
+<div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">support_agent</span>
+</div>
+<div class="">
+<h4 class="font-title-sm text-on-surface mb-2">Expert Consultation</h4>
+<p class="text-text-secondary">Our in-store specialists help you choose products that best fit your lifestyle and home space.</p>
+</div>
+</div>
+<div class="flex gap-6">
+<div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-secondary/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" style="font-variation-settings: 'FILL' 1;">rocket_launch</span>
+</div>
+<div>
+<h4 class="font-title-sm text-on-surface mb-2">Priority Setup</h4>
+<p class="text-text-secondary">Complimentary home delivery and professional installation within 24 hours of purchase.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4 reveal active">
+<div class="space-y-4 pt-12">
+<div class="rounded-3xl overflow-hidden shadow-lg h-64 bg-slate-200">
+<img alt="Hreeem Stores Showroom Detail" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxBLMCShIxYItLtVpAx1-LoZjmeTkB6bIAyLfC5f_c619Ivt5O5IlEEvKDifOBEIa6VidmgDRf_Enw4ezJZooKPXQwaR4_HkVZ7-RlwoC4uWdnqH2y8n2dFwKHsgeuGPiuHghRcQyoneG3W2iR8sAb3Kr10kmc86qQEjHt0pPrjpkrfkrGEyLZOElGO1CEFkX1PmL5bjHfoznLEHm51feeP_eSG-dUhkwnjft-QYIg__ixCUEhI8Hd"/>
+</div>
+<div class="rounded-3xl overflow-hidden shadow-lg h-80 bg-slate-300">
+<img alt="Premium Appliances" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtwS_J52DBOarBMyyvacqSs9g8Voz-XeXVExcSqfmQiCo_NKS7_zCGSbS9DQi7ZWrcOf-M7h0EcatwizoV7Y1qmQ6MBmve527Y3oiehudH91X7xBDr7m7jfF6mX0MQQUrwPw879PE963P6ObNziJkFf9-Z5QLkOvajElEKuxptZPmuC1MNLKkFg0j1Gf0GjOslt0-pNlhsmQXqSKm1OnsERnU2M4hYyANas8XhAc9WHY57GKj0rH1p"/>
+</div>
+</div>
+<div class="space-y-4">
+<div class="rounded-3xl overflow-hidden shadow-lg h-80 bg-slate-300">
+<img alt="Hreeem Stores Retail Experience" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAa20rU_vwxaI5CpLSblrqlPSxke6ZbCzQV9Rw0vY4ojFwLhfLX6JtBIfzkm36EnXSJqbTdoSabw361IuJ64qPENfUVcAZsv3sU_mpw77wknLGOKuThCre2ABc_t9lEO6I0m9CA_xbneoFeCtnhTKSXDMCdM7rZqww9cccoP2fpvfSndFqewvi-gHo4bLi_lEEKN3M5VNTBK8v-xFBJv3s0u7Ha79XesHmuQF0JvjWEd86rUVAbq7mj"/>
+</div>
+<div class="rounded-3xl overflow-hidden shadow-lg h-64 bg-slate-200">
+<img alt="Customer Service at Hreeem Stores" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0B78xKWopY8aq-sqkFJU-jOeMmKFFam9XEPlU3pTlx3di19VkUwyOLhI8BEDEdx3NBkOkUkIQjgRL2-k1KUXNgztL2rxoNrLE-LK0BvmlHgrz_-YvCEkezizgjNsjiqxZVV9Zt7GQdDRC6X4qU_qQvR__SiMbK5SRM_qJnOx3Wm2colNNtzJOdRsewKPfBSOTCCWXH4gOnrZ7k47nGTqhPvEFaVRyMarO86MNNwZC98xu-6E-83Bd"/>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Testimonials -->
+<section class="bg-surface-container py-section-gap overflow-hidden">
+<div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop text-center mb-16 reveal active">
+<h2 class="font-headline-md text-on-surface mb-4">Customer Success Stories</h2>
+<div class="flex justify-center gap-1">
+<span class="material-symbols-outlined text-status-success" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-status-success" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-status-success" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-status-success" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined text-status-success" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+<div class="flex gap-8 overflow-x-auto pb-12 snap-x px-margin-mobile hide-scrollbar">
+<div class="snap-center flex-shrink-0 w-full sm:w-[400px] glass p-8 rounded-[32px] reveal active">
+<p class="text-body-lg text-on-surface italic mb-8">"Bought my new S24 Ultra and an OLED TV from Hreeem Stores. The financing was smooth and the delivery was same-day. Truly a world-class experience."</p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center font-bold text-secondary">RK</div>
+<div class="">
+<h5 class="font-ui-label-bold text-on-surface">Rajesh Kumar</h5>
+<p class="text-ui-caption text-text-secondary">Verified Buyer</p>
+</div>
+</div>
+</div>
+<div class="snap-center flex-shrink-0 w-full sm:w-[400px] glass p-8 rounded-[32px] reveal active" style="transition-delay: 100ms;">
+<p class="text-body-lg text-on-surface italic mb-8">"The best place for home appliances. Hreeem Stores helped me choose the right AC for my living room and the installation was very professional."</p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center font-bold text-secondary">SP</div>
+<div>
+<h5 class="font-ui-label-bold text-on-surface">Sneha Patel</h5>
+<p class="text-ui-caption text-text-secondary">Homeowner</p>
+</div>
+</div>
+</div>
+<div class="snap-center flex-shrink-0 w-full sm:w-[400px] glass p-8 rounded-[32px] reveal active" style="transition-delay: 200ms;">
+<p class="text-body-lg text-on-surface italic mb-8">"Hreeem Stores is my go-to for Apple products. Authentic stock, great student discounts, and excellent after-sales support."</p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center font-bold text-secondary">AM</div>
+<div>
+<h5 class="font-ui-label-bold text-on-surface">Aryan Mehta</h5>
+<p class="text-ui-caption text-text-secondary">Student</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Contact Form Section -->
+<section class="py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto" id="contact">
+<div class="glass p-8 md:p-16 rounded-[48px] shadow-2xl relative overflow-hidden reveal active">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-16 relative z-10">
+<div>
+<h2 class="font-headline-md text-on-surface mb-6">Plan Your Next Upgrade</h2>
+<p class="text-body-lg text-text-secondary mb-10">Fill out the form and our specialist from Hreeem Stores will reach out to you with personalized offers.</p>
+<div class="space-y-6">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-secondary">call</span>
+<span class="font-ui-label-bold text-on-surface">+91 7975774472</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-secondary">mail</span>
+<span class="font-ui-label-bold text-on-surface">support@hreeem.com</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-secondary">location_on</span>
+<span class="font-ui-label-bold text-on-surface">Luxury Square, Tech City</span>
+</div>
+</div>
+</div>
+<form class="space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="text-ui-label-bold text-on-surface text-xs block">FULL NAME</label>
+<input class="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 focus:ring-2 focus:ring-secondary focus:border-secondary transition-all outline-none" placeholder="John Doe" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="text-ui-label-bold text-on-surface text-xs block">MOBILE NUMBER</label>
+<input class="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 focus:ring-2 focus:ring-secondary focus:border-secondary transition-all outline-none" placeholder="+91 00000 00000" type="tel"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="text-ui-label-bold text-on-surface text-xs block">EMAIL ADDRESS</label>
+<input class="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 focus:ring-2 focus:ring-secondary focus:border-secondary transition-all outline-none" placeholder="john@example.com" type="email"/>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-2">
+<label class="text-ui-label-bold text-on-surface text-xs block">PRODUCT INTERESTED IN</label>
+<select class="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 focus:ring-2 focus:ring-secondary focus:border-secondary transition-all outline-none appearance-none">
+<option>Select Category</option>
+<option>Smartphones</option>
+<option>Laptops</option>
+<option>Smart TVs</option>
+<option>Home Appliances</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="text-ui-label-bold text-on-surface text-xs block">BUDGET RANGE</label>
+<select class="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 focus:ring-2 focus:ring-secondary focus:border-secondary transition-all outline-none appearance-none">
+<option>Select Range</option>
+<option>₹10,000 - ₹30,000</option>
+<option>₹30,000 - ₹70,000</option>
+<option>₹70,000 - ₹1,50,000</option>
+<option>₹1,50,000+</option>
+</select>
+</div>
+</div>
+<button class="w-full py-4 bg-secondary text-white font-ui-label-bold rounded-xl shadow-lg hover:bg-secondary-container transition-all">Submit Inquiry</button>
+</form>
+</div>
+</div>
+</section>
+<!-- FAQ Section -->
+<section class="py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto bg-white rounded-[64px] mb-section-gap">
+<div class="text-center mb-16 reveal active">
+<h2 class="font-headline-md text-on-surface mb-4">Frequently Asked Questions</h2>
+</div>
+<div class="max-w-3xl mx-auto space-y-4 px-margin-mobile">
+<div class="border border-outline-variant rounded-2xl overflow-hidden reveal active">
+<button class="w-full px-6 py-4 flex justify-between items-center bg-white hover:bg-surface-container-low transition-colors text-left" onclick="toggleFaq(this)">
+<span class="font-ui-label-bold text-on-surface">What documents are needed for No-Cost EMI?</span>
+<span class="material-symbols-outlined transition-transform">expand_more</span>
+</button>
+<div class="px-6 py-4 bg-surface-container-lowest hidden text-text-secondary">
+                        For credit card EMI, no documents are needed. For paper-based finance (Bajaj Finserv/HDFC), you'll need your Aadhaar card, PAN card, and a cancelled cheque.
+                    </div>
+</div>
+<div class="border border-outline-variant rounded-2xl overflow-hidden reveal active" style="transition-delay: 100ms;">
+<button class="w-full px-6 py-4 flex justify-between items-center bg-white hover:bg-surface-container-low transition-colors text-left" onclick="toggleFaq(this)">
+<span class="font-ui-label-bold text-on-surface">How long does the delivery and installation take?</span>
+<span class="material-symbols-outlined transition-transform">expand_more</span>
+</button>
+<div class="px-6 py-4 bg-surface-container-lowest hidden text-text-secondary">
+                        Standard delivery from Hreeem Stores is within 24 hours for in-stock products. Professional installation for appliances is scheduled within 48 hours of delivery.
+                    </div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-primary-container dark:bg-surface-container-lowest w-full pt-section-gap pb-8">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto text-on-primary-container font-body-md text-body-md">
+<div class="space-y-6">
+<span class="font-headline-md text-headline-md text-on-primary">Hreeem Stores</span>
+<p class="max-w-xs text-on-primary-container/80">Experience the future of retail with India's most trusted premium electronics destination.</p>
+<div class="flex gap-4">
+<a class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition-colors" href="#">
+<span class="material-symbols-outlined text-on-primary text-sm">public</span>
+</a>
+<a class="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition-colors" href="#">
+<span class="material-symbols-outlined text-on-primary text-sm">share</span>
+</a>
+</div>
+</div>
+<div>
+<h4 class="text-white font-ui-label-bold mb-6">Product Categories</h4>
+<ul class="space-y-3">
+<li class=""><a class="hover:text-on-primary transition-opacity underline-offset-4 hover:underline" href="#">Smartphones</a></li>
+<li class=""><a class="hover:text-on-primary transition-opacity underline-offset-4 hover:underline" href="#">Appliances</a></li>
+<li class=""><a class="hover:text-on-primary transition-opacity underline-offset-4 hover:underline" href="#">Smart Home</a></li>
+<li class=""><a class="hover:text-on-primary transition-opacity underline-offset-4 hover:underline" href="#">Laptops</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-white font-ui-label-bold mb-6">Quick Links</h4>
+<ul class="space-y-3">
+<li class=""><a class="hover:text-on-primary transition-opacity underline-offset-4 hover:underline" href="#">Store Locator</a></li>
+<li class=""><a class="hover:text-on-primary transition-opacity underline-offset-4 hover:underline" href="#">Support</a></li>
+<li class=""><a class="hover:text-on-primary transition-opacity underline-offset-4 hover:underline" href="#">Privacy Policy</a></li>
+<li class=""><a class="hover:text-on-primary transition-opacity underline-offset-4 hover:underline" href="#">Terms of Service</a></li>
+</ul>
+</div>
+<div>
+<h4 class="text-white font-ui-label-bold mb-6">Newsletter</h4>
+<p class="mb-4 text-on-primary-container/80">Subscribe for early access to exclusive sales and product launches.</p>
+<div class="flex">
+<input class="bg-white/10 border-0 rounded-l-xl px-4 py-3 text-white focus:ring-1 focus:ring-secondary outline-none flex-grow" placeholder="Email" type="email"/>
+<button class="bg-secondary px-4 rounded-r-xl text-white hover:bg-secondary-container transition-colors">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+</div>
+</div>
+<div class="mt-20 pt-8 border-t border-white/10 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto text-center">
+<div class="space-y-2">
+<p class="text-ui-caption text-on-primary-container/60">© 2024 Hreeem Solutions. All rights reserved.</p>
+<p class="text-ui-caption text-on-primary-container/60">Designed &amp; Developed by Bharath Kumar</p>
+<p class="text-ui-caption text-on-primary-container/60">Contact: 7975774472, WhatsApp: 8453036381</p>
+<p class="text-ui-caption text-on-primary-container/60">Email: support@hreeem.com | Admin: bharath.kumar@hreeem.com</p>
+</div>
+</div>
+</footer>
+<!-- Floating Action Buttons -->
+<div class="fixed bottom-8 right-8 z-[100] flex flex-col gap-4">
+<button class="w-14 h-14 bg-[#25D366] text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform">
+<svg class="w-8 h-8 fill-current" viewbox="0 0 24 24"><path class="" d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.284l-.539 2.016 2.049-.526c.947.517 2.002.81 3.23.811 3.18 0 5.764-2.583 5.765-5.763 0-3.18-2.583-5.788-5.757-5.788zm3.284 8.232c-.131.368-.684.693-.941.737-.257.045-.584.059-1.21-.197-2.613-1.071-4.303-3.738-4.434-3.913-.131-.175-1.066-1.417-1.066-2.702 0-1.285.671-1.921.908-2.184.237-.263.513-.329.684-.329.171 0 .342.001.488.007.155.006.363-.058.567.437.204.496.697 1.706.756 1.823.059.117.098.253.02.409-.079.156-.118.253-.236.389-.118.136-.25.304-.355.408-.118.118-.242.247-.105.485.137.237.608 1.004 1.303 1.623.893.796 1.649 1.042 1.886 1.161.237.118.375.098.513-.059.138-.156.592-.691.751-.926.158-.236.315-.197.533-.117.217.08 1.382.652 1.618.77.237.118.395.175.454.272.059.098.059.563-.073.931z"></path></svg>
+</button>
+<button class="w-14 h-14 bg-white text-secondary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform opacity-0 invisible" id="backToTop" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+<span class="material-symbols-outlined">arrow_upward</span>
+</button>
+</div>
+<script>
+        // Reveal Animations
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        // FAQ Toggle
+        function toggleFaq(btn) {
+            const content = btn.nextElementSibling;
+            const icon = btn.querySelector('.material-symbols-outlined');
+            content.classList.toggle('hidden');
+            icon.style.transform = content.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
+
+        // Back to Top Visibility
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('backToTop');
+            if (window.scrollY > 500) {
+                btn.classList.remove('opacity-0', 'invisible');
+            } else {
+                btn.classList.add('opacity-0', 'invisible');
+            }
+        });
+
+        // Navigation Scroll Effect
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('header');
+            if (window.scrollY > 50) {
+                nav.classList.add('shadow-md');
+            } else {
+                nav.classList.remove('shadow-md');
+            }
+        });
+</script></body></html>
