@@ -16,8 +16,13 @@ export default function Hero({ onExploreClick, settings }) {
 
   return (
     <section 
-      className="relative min-h-[90vh] flex items-center justify-start overflow-hidden bg-cover bg-center"
-      style={{ backgroundImage: `url('${bgImg}')` }}
+      className="relative min-h-[90vh] flex items-center justify-start overflow-hidden bg-cover bg-center bg-no-repeat"
+      style={{ 
+        backgroundImage: `url('${bgImg}')`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
     >
       {/* Light gradient overlay that matches the theme background (#f9f9ff) for perfect readability */}
       <div className="absolute inset-0 bg-gradient-to-r from-[#f9f9ff] via-[#f9f9ff]/90 to-[#f9f9ff]/10 z-0"></div>
