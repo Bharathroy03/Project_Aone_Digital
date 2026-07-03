@@ -1274,31 +1274,31 @@ export default function App() {
 
       {/* Redesigned Enterprise-Grade CMS Dashboard */}
       {view === 'admin-dashboard' && (
-        <div className="min-h-screen bg-[#f9f9ff] flex text-[#141b2b] z-[110] relative" style={{ fontFamily: 'var(--font-ui)' }}>
+        <div className="min-h-screen bg-[#f9f9ff] text-[#141b2b] pb-10 z-[110] relative" style={{ fontFamily: 'var(--font-ui)' }}>
           
           {/* Sidebar Menu */}
-          <aside className="w-64 bg-white text-slate-700 flex flex-col fixed inset-y-0 left-0 z-30 shadow-lg border-r border-slate-200/60">
-            <div className="p-6 border-b border-slate-100 flex items-center gap-3 bg-white">
+          <aside className="w-64 bg-white/90 backdrop-blur-xl text-slate-700 flex flex-col fixed top-4 bottom-4 left-4 z-30 shadow-2xl border border-slate-200/50 rounded-[32px] p-6 overflow-hidden">
+            <div className="pb-6 border-b border-slate-100 flex items-center gap-3 bg-transparent">
               <span className="material-symbols-outlined text-secondary text-2xl font-bold">grid_view</span>
               <div>
-                <h1 className="text-[#141b2b] text-2xl tracking-tighter font-extrabold leading-none" style={{ fontFamily: 'var(--font-body)' }}>Aone Digital</h1>
+                <h1 className="text-[#141b2b] text-xl tracking-tighter font-extrabold leading-none" style={{ fontFamily: 'var(--font-body)' }}>Aone Digital</h1>
                 <span className="text-[10px] text-text-muted tracking-wider uppercase font-semibold">CMS Dashboard</span>
               </div>
             </div>
             
             {/* User Profile Info */}
-            <div className="p-4 mx-4 my-3 bg-[#f9f9ff] rounded-[24px] border border-slate-200/50 flex items-center gap-3 shadow-sm">
-              <div className="w-8 h-8 rounded-full bg-secondary-container text-white flex items-center justify-center font-bold text-sm">
+            <div className="p-4 my-4 bg-slate-50 border border-slate-100 rounded-[24px] flex items-center gap-3 shadow-sm">
+              <div className="w-8 h-8 rounded-full bg-secondary text-white flex items-center justify-center font-bold text-sm">
                 {currentUserRole[0]}
               </div>
               <div className="overflow-hidden">
                 <span className="text-[#141b2b] text-xs font-bold block truncate">{adminCredentials.username || 'Bharath'}</span>
-                <span className="text-[10px] text-text-muted block truncate font-mono">{currentUserRole}</span>
+                <span className="text-[9px] text-text-muted block truncate font-semibold uppercase tracking-wider">{currentUserRole}</span>
               </div>
             </div>
 
             {/* Navigation links */}
-            <nav className="flex-1 px-4 py-3 space-y-1 overflow-y-auto">
+            <nav className="flex-1 space-y-1.5 overflow-y-auto pr-1">
               {[
                 { id: 'overview', name: 'Overview', icon: 'dashboard' },
                 { id: 'editor', name: 'Content Builder', icon: 'edit_note' },
@@ -1317,9 +1317,9 @@ export default function App() {
                       setCmsTab(tab.id);
                       setCmsSearchQuery('');
                     }}
-                    className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold rounded-[24px] transition-all hover:scale-[1.02] ${
+                    className={`w-full flex items-center gap-3 px-4 py-3 text-xs font-bold rounded-[20px] transition-all duration-300 hover:scale-[1.03] ${
                       isActive 
-                        ? 'bg-secondary text-white shadow-lg shadow-secondary/20' 
+                        ? 'bg-gradient-to-r from-secondary to-secondary-container text-white shadow-lg shadow-secondary/20' 
                         : 'text-slate-600 hover:bg-secondary/5 hover:text-secondary'
                     }`}
                   >
@@ -1330,24 +1330,24 @@ export default function App() {
               })}
             </nav>
 
-            <div className="p-4 border-t border-slate-100">
+            <div className="pt-4 border-t border-slate-100">
               <button
                 onClick={() => {
                   setIsAdminLoggedIn(false);
                   setView('home');
                 }}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-slate-200 hover:border-red-500 hover:text-red-500 hover:bg-red-50 text-xs font-bold rounded-[24px] transition-colors cursor-pointer text-[#141b2b]"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-slate-200 hover:border-red-500 hover:text-red-500 hover:bg-red-50 text-xs font-bold rounded-[20px] transition-all hover:scale-[1.03] cursor-pointer text-[#141b2b]"
               >
-                <span className="material-symbols-outlined text-sm">logout</span> Logout Dashboard
+                <span className="material-symbols-outlined text-sm">logout</span> Logout
               </button>
             </div>
           </aside>
 
           {/* Right Main Container */}
-          <main className="flex-grow pl-64 flex flex-col min-h-screen">
+          <main className="flex-grow pl-72 flex flex-col min-h-screen">
             
             {/* Top Bar Header */}
-            <header className="h-16 bg-white border-b border-slate-200 px-8 flex justify-between items-center sticky top-0 z-20 shadow-sm">
+            <header className="h-16 bg-white/90 backdrop-blur-xl border border-slate-200/50 shadow-md rounded-[24px] px-8 flex justify-between items-center sticky top-4 z-20 mx-4">
               <div className="flex items-center gap-2 text-xs text-text-secondary font-semibold">
                 <span>Admin</span>
                 <span className="material-symbols-outlined text-xs">chevron_right</span>
