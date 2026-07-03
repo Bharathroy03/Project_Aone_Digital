@@ -1220,7 +1220,7 @@ export default function App() {
       {view === 'admin-login' && (
         <section className="max-w-md mx-auto my-36 p-8 md:p-12 bg-white/70 backdrop-blur-xl border border-slate-200/50 rounded-[32px] shadow-2xl w-full px-margin-mobile" style={{ fontFamily: 'var(--font-ui)' }}>
           <div className="text-center mb-8">
-            <h2 className="font-headline-md text-on-surface mb-2">Admin Portal</h2>
+            <h2 className="font-headline-md text-on-surface mb-2" style={{ fontFamily: 'var(--font-body)' }}>Admin Portal</h2>
             <p className="text-sm text-text-secondary">Please log in to manage your inventory.</p>
           </div>
           
@@ -1281,7 +1281,7 @@ export default function App() {
             <div className="p-6 border-b border-slate-100 flex items-center gap-3 bg-white">
               <span className="material-symbols-outlined text-secondary text-2xl font-bold">grid_view</span>
               <div>
-                <h1 className="text-[#141b2b] font-display-lg text-lg tracking-tight font-extrabold leading-none">Aone Digital</h1>
+                <h1 className="text-[#141b2b] text-2xl tracking-tighter font-extrabold leading-none" style={{ fontFamily: 'var(--font-body)' }}>Aone Digital</h1>
                 <span className="text-[10px] text-text-muted tracking-wider uppercase font-semibold">CMS Dashboard</span>
               </div>
             </div>
@@ -1379,7 +1379,7 @@ export default function App() {
                 <div className="space-y-8 animate-fade-in">
                   <div className="flex justify-between items-center">
                     <div>
-                      <h2 className="text-xl font-bold text-slate-800">Operational Overview</h2>
+                      <h2 className="text-xl font-bold text-slate-850" style={{ fontFamily: 'var(--font-body)' }}>Operational Overview</h2>
                       <p className="text-xs text-slate-500">Live analytics metrics from the storefront portal database.</p>
                     </div>
                     <div className="text-xs font-semibold bg-white border border-slate-200 px-3 py-1.5 rounded-lg text-slate-500">
@@ -1484,7 +1484,7 @@ export default function App() {
               {cmsTab === 'editor' && (
                 <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm space-y-6 animate-fade-in">
                   <div>
-                    <h2 className="text-xl font-bold text-slate-800">Visual Page Content Builder</h2>
+                    <h2 className="text-xl font-bold text-slate-850" style={{ fontFamily: 'var(--font-body)' }}>Visual Page Content Builder</h2>
                     <p className="text-xs text-slate-500">Edit dynamic storefront copy, banner links, and hero sliders instantly.</p>
                   </div>
                   
@@ -1657,7 +1657,7 @@ export default function App() {
                 <div className="space-y-6 animate-fade-in">
                   <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div>
-                      <h2 className="text-xl font-bold text-slate-800">Products Inventory</h2>
+                      <h2 className="text-xl font-bold text-slate-850" style={{ fontFamily: 'var(--font-body)' }}>Products Inventory</h2>
                       <p className="text-xs text-slate-500">Insert, update, edit, and organize product catalogs.</p>
                     </div>
                     
@@ -1770,7 +1770,7 @@ export default function App() {
                 <div className="space-y-6 animate-fade-in">
                   <div className="flex justify-between items-center">
                     <div>
-                      <h2 className="text-xl font-bold text-slate-800">Media Assets Library</h2>
+                      <h2 className="text-xl font-bold text-slate-850" style={{ fontFamily: 'var(--font-body)' }}>Media Assets Library</h2>
                       <p className="text-xs text-slate-500">Upload, reuse, catalog, and query website graphics, files, and icons.</p>
                     </div>
                     
@@ -1834,7 +1834,7 @@ export default function App() {
                 <div className="space-y-6 animate-fade-in">
                   <div className="flex justify-between items-center">
                     <div>
-                      <h2 className="text-xl font-bold text-slate-800">Leads Center</h2>
+                      <h2 className="text-xl font-bold text-slate-850" style={{ fontFamily: 'var(--font-body)' }}>Leads Center</h2>
                       <p className="text-xs text-slate-500">Track and respond to website user inquiries and newsletter subscribers.</p>
                     </div>
 
@@ -1906,7 +1906,7 @@ export default function App() {
               {cmsTab === 'theme' && (
                 <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm space-y-6 animate-fade-in">
                   <div>
-                    <h2 className="text-xl font-bold text-slate-800">Dynamic Branding &amp; SEO Engine</h2>
+                    <h2 className="text-xl font-bold text-slate-850" style={{ fontFamily: 'var(--font-body)' }}>Dynamic Branding &amp; SEO Engine</h2>
                     <p className="text-xs text-slate-500">Customize color styles, margins, typography, and page headers directly.</p>
                   </div>
 
@@ -2068,7 +2068,7 @@ export default function App() {
                 <div className="space-y-6 animate-fade-in">
                   <div className="flex justify-between items-center">
                     <div>
-                      <h2 className="text-xl font-bold text-slate-800">Team Roles &amp; Permissions</h2>
+                      <h2 className="text-xl font-bold text-slate-850" style={{ fontFamily: 'var(--font-body)' }}>Team Roles &amp; Permissions</h2>
                       <p className="text-xs text-slate-500">Manage administrator profiles, accounts, and CMS interface permissions.</p>
                     </div>
 
@@ -2138,7 +2138,7 @@ export default function App() {
               {cmsTab === 'logs' && (
                 <div className="space-y-6 animate-fade-in">
                   <div>
-                    <h2 className="text-xl font-bold text-slate-800">Security Audit Trail</h2>
+                    <h2 className="text-xl font-bold text-slate-850" style={{ fontFamily: 'var(--font-body)' }}>Security Audit Trail</h2>
                     <p className="text-xs text-slate-500">Real-time chronicle log tracing administrative database commits.</p>
                   </div>
 
