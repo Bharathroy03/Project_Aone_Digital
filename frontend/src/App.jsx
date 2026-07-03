@@ -224,6 +224,30 @@ export default function App() {
     }
   }, [view]);
 
+  // Scroll Reveal Animations using IntersectionObserver
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.05,
+      rootMargin: '0px 0px -40px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    }, observerOptions);
+
+    // Observe elements
+    const elements = document.querySelectorAll('.reveal');
+    elements.forEach((el) => observer.observe(el));
+
+    return () => {
+      elements.forEach((el) => observer.unobserve(el));
+    };
+  }, [products, settings, view]);
+
   // Bind CSS custom variables and page title/meta updates on settings change
   useEffect(() => {
     if (settings && settings.theme) {
@@ -761,7 +785,7 @@ export default function App() {
 
           {/* Categories Navigation Grid */}
           <section className="py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto" id="categories">
-            <div className="text-center mb-16 reveal active">
+            <div className="text-center mb-16 reveal">
               <h2 className="font-headline-md-mobile md:text-headline-md text-on-surface mb-4">Shop by Category</h2>
               <div className="w-20 h-1 bg-secondary mx-auto rounded-full"></div>
             </div>
@@ -780,7 +804,7 @@ export default function App() {
               ].map((cat, idx) => (
                 <div 
                   key={idx} 
-                  className="glass p-6 rounded-3xl flex flex-col items-center text-center hover:shadow-xl hover:translate-y-[-8px] transition-all cursor-pointer reveal active"
+                  className="glass p-6 rounded-3xl flex flex-col items-center text-center hover:shadow-xl hover:translate-y-[-8px] transition-all cursor-pointer reveal"
                   onClick={() => {
                     setCategoryFilter(cat.filter);
                     scrollIntoCatalog();
@@ -866,7 +890,7 @@ export default function App() {
           <section className="bg-primary-container py-section-gap relative overflow-hidden" id="offers">
             <div className="absolute top-0 right-0 w-96 h-96 bg-secondary/10 blur-[120px] rounded-full"></div>
             <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop relative z-10">
-              <div className="text-center mb-16 reveal active">
+              <div className="text-center mb-16 reveal">
                 <h2 className="font-headline-md text-white mb-4">Exclusive Retail Offers</h2>
                 <p className="text-on-primary-container font-ui-label-md">Maximum benefits on every purchase you make at Aone Digital.</p>
               </div>
@@ -877,7 +901,7 @@ export default function App() {
                   { icon: 'payments', title: 'Instant Cashback', desc: 'Avail up to 10% instant discount on HDFC, ICICI, and SBI bank cards.' },
                   { icon: 'school', title: 'Student Offers', desc: 'Extra 5% discount for students on Laptops and Tablets with valid ID.' }
                 ].map((offer, idx) => (
-                  <div key={idx} className="p-8 bg-white/5 border border-white/10 rounded-[32px] hover:bg-white/10 transition-all group reveal active" style={{ transitionDelay: `${idx * 100}ms` }}>
+                  <div key={idx} className="p-8 bg-white/5 border border-white/10 rounded-[32px] hover:bg-white/10 transition-all group reveal" style={{ transitionDelay: `${idx * 100}ms` }}>
                     <span className="material-symbols-outlined text-4xl text-secondary mb-6 block group-hover:scale-110 transition-transform">{offer.icon}</span>
                     <h4 className="text-white font-title-sm mb-2">{offer.title}</h4>
                     <p className="text-on-primary-container text-ui-label-md text-sm">{offer.desc}</p>
@@ -890,7 +914,7 @@ export default function App() {
           {/* Why Choose Us Section */}
           <section className="py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-section-gap items-center">
-              <div className="reveal active">
+              <div className="reveal">
                 <h2 className="font-headline-md text-on-surface mb-8">{settings?.about?.title || 'Redefining the Electronics Shopping Experience'}</h2>
                 <div className="space-y-8">
                   {[
@@ -911,7 +935,7 @@ export default function App() {
                 </div>
               </div>
               
-              <div className="grid grid-cols-2 gap-4 reveal active">
+              <div className="grid grid-cols-2 gap-4 reveal">
                 <div className="space-y-4 pt-12">
                   <div className="rounded-3xl overflow-hidden shadow-lg h-64 bg-slate-200">
                     <img alt="Aone Digital Showroom" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxBLMCShIxYItLtVpAx1-LoZjmeTkB6bIAyLfC5f_c619Ivt5O5IlEEvKDifOBEIa6VidmgDRf_Enw4ezJZooKPXQwaR4_HkVZ7-RlwoC4uWdnqH2y8n2dFwKHsgeuGPiuHghRcQyoneG3W2iR8sAb3Kr10kmc86qQEjHt0pPrjpkrfkrGEyLZOElGO1CEFkX1PmL5bjHfoznLEHm51feeP_eSG-dUhkwnjft-QYIg__ixCUEhI8Hd" />
@@ -934,7 +958,7 @@ export default function App() {
 
           {/* Testimonials Success Stories */}
           <section className="bg-surface-container py-section-gap overflow-hidden">
-            <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop text-center mb-16 reveal active">
+            <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop text-center mb-16 reveal">
               <h2 className="font-headline-md text-on-surface mb-4">Customer Success Stories</h2>
               <div className="flex justify-center gap-1">
                 {[...Array(5)].map((_, i) => (
@@ -948,7 +972,7 @@ export default function App() {
                 { name: 'Sneha Patel', role: 'Homeowner', initial: 'SP', comment: '"The best place for home appliances. Hreeem Stores helped me choose the right AC for my living room and the installation was very professional."' },
                 { name: 'Aryan Mehta', role: 'Student', initial: 'AM', comment: '"Hreeem Stores is my go-to for Apple products. Authentic stock, great student discounts, and excellent after-sales support."' }
               ].map((testi, idx) => (
-                <div key={idx} className="snap-center flex-shrink-0 w-full sm:w-[400px] glass p-8 rounded-[32px] reveal active" style={{ transitionDelay: `${idx * 100}ms` }}>
+                <div key={idx} className="snap-center flex-shrink-0 w-full sm:w-[400px] glass p-8 rounded-[32px] reveal" style={{ transitionDelay: `${idx * 100}ms` }}>
                   <p className="text-body-lg text-on-surface italic mb-8 h-28">{testi.comment}</p>
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center font-bold text-secondary">{testi.initial}</div>
@@ -964,7 +988,7 @@ export default function App() {
 
           {/* Inquiry Form Section */}
           <section className="py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto" id="contact">
-            <div className="glass p-8 md:p-16 rounded-[48px] shadow-2xl relative overflow-hidden reveal active">
+            <div className="glass p-8 md:p-16 rounded-[48px] shadow-2xl relative overflow-hidden reveal">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 relative z-10">
                 <div>
                   <h2 className="font-headline-md text-on-surface mb-6">Plan Your Next Upgrade</h2>
