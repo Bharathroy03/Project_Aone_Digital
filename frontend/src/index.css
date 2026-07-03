@@ -251,8 +251,8 @@ body {
   color: #0f172a;
 }
 
-/* Ensure the admin panel uses only the UI sans-serif font for all elements */
+/* Ensure the admin panel uses only the UI sans-serif font for all elements, excluding Material icons */
 .admin-font-override, 
-.admin-font-override * {
+.admin-font-override :not(.material-symbols-outlined) {
   font-family: var(--font-ui) !important;
 }
