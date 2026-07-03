@@ -197,7 +197,7 @@ export default function App() {
           {/* Brand Showcase Carousel */}
           <section className="py-16 bg-surface-container-low overflow-hidden select-none">
             <div className="mb-8 text-center px-margin-mobile">
-              <h3 className="font-ui-label-bold text-on-surface-variant uppercase tracking-widest text-ui-caption">Global Brand Partners</h3>
+              <h3 className="font-ui-label-bold text-on-surface-variant uppercase tracking-[0.2em] text-xs md:text-sm font-bold">Global Brand Partners</h3>
             </div>
             <div className="brand-carousel-track">
               {[
@@ -209,16 +209,16 @@ export default function App() {
                 { slug: 'whirlpool', name: 'Whirlpool' },
                 { slug: 'dyson', name: 'Dyson' }
               ].map((brand, i) => (
-                <div key={i} className="flex items-center justify-center w-[250px] grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                <div key={i} className="flex items-center justify-center w-[250px] grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
                   <img 
                     src={`https://cdn.simpleicons.org/${brand.slug}/141b2b`} 
                     alt={brand.name} 
-                    className="h-7 md:h-8 max-h-8 object-contain"
+                    className="h-9 md:h-11 max-h-12 object-contain"
                     onError={(e) => {
                       e.target.style.display = 'none';
                       const textNode = document.createTextNode(brand.name.toUpperCase());
                       const span = document.createElement('span');
-                      span.className = "font-display-lg text-xl text-on-surface font-bold tracking-wider";
+                      span.className = "font-display-lg text-2xl text-on-surface font-bold tracking-wider";
                       span.appendChild(textNode);
                       e.target.parentNode.appendChild(span);
                     }}
@@ -235,16 +235,16 @@ export default function App() {
                 { slug: 'whirlpool', name: 'Whirlpool' },
                 { slug: 'dyson', name: 'Dyson' }
               ].map((brand, i) => (
-                <div key={`dup-${i}`} className="flex items-center justify-center w-[250px] grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                <div key={`dup-${i}`} className="flex items-center justify-center w-[250px] grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
                   <img 
                     src={`https://cdn.simpleicons.org/${brand.slug}/141b2b`} 
                     alt={brand.name} 
-                    className="h-7 md:h-8 max-h-8 object-contain"
+                    className="h-9 md:h-11 max-h-12 object-contain"
                     onError={(e) => {
                       e.target.style.display = 'none';
                       const textNode = document.createTextNode(brand.name.toUpperCase());
                       const span = document.createElement('span');
-                      span.className = "font-display-lg text-xl text-on-surface font-bold tracking-wider";
+                      span.className = "font-display-lg text-2xl text-on-surface font-bold tracking-wider";
                       span.appendChild(textNode);
                       e.target.parentNode.appendChild(span);
                     }}
