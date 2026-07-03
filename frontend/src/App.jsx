@@ -263,6 +263,15 @@ export default function App() {
     }
   };
 
+  const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (error) => reject(error);
+    });
+  };
+
   const [uploadingImage, setUploadingImage] = useState(false);
 
   const handleImageUpload = async (e) => {
@@ -291,13 +300,14 @@ export default function App() {
         .getPublicUrl(filePath);
 
       setProductForm({ ...productForm, image_url: publicUrl });
-      alert('Image uploaded to Supabase Storage successfully!');
     } catch (err) {
-      console.error('Supabase upload error:', err);
-      // Fallback image url
-      const mockUrl = `https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=600&q=80`;
-      setProductForm({ ...productForm, image_url: mockUrl });
-      alert(`Supabase Storage Mock Fallback: Bucket 'product-images' not initialized. File image URL set to mock showroom image.`);
+      console.warn('Supabase upload error, using local base64 fallback:', err);
+      try {
+        const base64Url = await fileToBase64(file);
+        setProductForm({ ...productForm, image_url: base64Url });
+      } catch (readErr) {
+        console.error('File read error:', readErr);
+      }
     } finally {
       setUploadingImage(false);
     }
@@ -501,24 +511,26 @@ export default function App() {
 
       if (!response.ok) throw new Error('Failed to index file in database');
       fetchMedia();
-      alert('Media asset uploaded and indexed successfully!');
     } catch (err) {
-      console.error('Media upload error:', err);
-      // Fallback
-      fetch('/api/media/upload', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: file.name,
-          url: 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=600&q=80',
-          size: `${(file.size / 1024).toFixed(0)} KB`,
-          file_type: file.type
-        })
-      })
-        .then(() => {
-          fetchMedia();
-          alert('Supabase Storage Fallback: Mock media asset indexed in dashboard.');
+      console.warn('Supabase media upload error, using local base64 fallback:', err);
+      try {
+        const base64Url = await fileToBase64(file);
+        const response = await fetch('/api/media/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: file.name,
+            url: base64Url,
+            size: `${(file.size / 1024).toFixed(0)} KB`,
+            file_type: file.type
+          })
         });
+        if (response.ok) {
+          fetchMedia();
+        }
+      } catch (readErr) {
+        console.error('File read error:', readErr);
+      }
     }
   };
 
