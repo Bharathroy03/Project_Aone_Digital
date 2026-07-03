@@ -200,15 +200,55 @@ export default function App() {
               <h3 className="font-ui-label-bold text-on-surface-variant uppercase tracking-widest text-ui-caption">Global Brand Partners</h3>
             </div>
             <div className="brand-carousel-track">
-              {['APPLE', 'SAMSUNG', 'SONY', 'LG', 'VIVO', 'WHIRLPOOL', 'DYSON'].map((brand, i) => (
-                <div key={i} className="flex items-center justify-center w-[250px] grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all font-display-lg text-2xl text-on-surface font-bold">
-                  {brand}
+              {[
+                { slug: 'apple', name: 'Apple' },
+                { slug: 'samsung', name: 'Samsung' },
+                { slug: 'sony', name: 'Sony' },
+                { slug: 'lg', name: 'LG' },
+                { slug: 'vivo', name: 'Vivo' },
+                { slug: 'whirlpool', name: 'Whirlpool' },
+                { slug: 'dyson', name: 'Dyson' }
+              ].map((brand, i) => (
+                <div key={i} className="flex items-center justify-center w-[250px] grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                  <img 
+                    src={`https://cdn.simpleicons.org/${brand.slug}/141b2b`} 
+                    alt={brand.name} 
+                    className="h-7 md:h-8 max-h-8 object-contain"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      const textNode = document.createTextNode(brand.name.toUpperCase());
+                      const span = document.createElement('span');
+                      span.className = "font-display-lg text-xl text-on-surface font-bold tracking-wider";
+                      span.appendChild(textNode);
+                      e.target.parentNode.appendChild(span);
+                    }}
+                  />
                 </div>
               ))}
               {/* Duplicate loop for seamless scroll */}
-              {['APPLE', 'SAMSUNG', 'SONY', 'LG', 'VIVO', 'WHIRLPOOL', 'DYSON'].map((brand, i) => (
-                <div key={`dup-${i}`} className="flex items-center justify-center w-[250px] grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all font-display-lg text-2xl text-on-surface font-bold">
-                  {brand}
+              {[
+                { slug: 'apple', name: 'Apple' },
+                { slug: 'samsung', name: 'Samsung' },
+                { slug: 'sony', name: 'Sony' },
+                { slug: 'lg', name: 'LG' },
+                { slug: 'vivo', name: 'Vivo' },
+                { slug: 'whirlpool', name: 'Whirlpool' },
+                { slug: 'dyson', name: 'Dyson' }
+              ].map((brand, i) => (
+                <div key={`dup-${i}`} className="flex items-center justify-center w-[250px] grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-300">
+                  <img 
+                    src={`https://cdn.simpleicons.org/${brand.slug}/141b2b`} 
+                    alt={brand.name} 
+                    className="h-7 md:h-8 max-h-8 object-contain"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      const textNode = document.createTextNode(brand.name.toUpperCase());
+                      const span = document.createElement('span');
+                      span.className = "font-display-lg text-xl text-on-surface font-bold tracking-wider";
+                      span.appendChild(textNode);
+                      e.target.parentNode.appendChild(span);
+                    }}
+                  />
                 </div>
               ))}
             </div>
