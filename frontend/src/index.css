@@ -20,8 +20,9 @@
   --text-secondary: #9ca3af;
   --text-muted: #6b7280;
   
-  --font-display: 'Outfit', 'Inter', sans-serif;
-  --font-body: 'Inter', sans-serif;
+  --font-display: 'Libre Caslon Text', serif;
+  --font-body: 'Libre Caslon Text', serif;
+  --font-ui: 'Plus Jakarta Sans', sans-serif;
   
   --transition-smooth: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   --transition-fast: all 0.2s ease;
@@ -64,7 +65,7 @@ a {
 }
 
 button, input, select, textarea {
-  font-family: inherit;
+  font-family: var(--font-ui);
 }
 
 /* Scrollbar Styling */
@@ -115,7 +116,7 @@ button, input, select, textarea {
 }
 
 .logo-text {
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-size: 1.5rem;
   font-weight: 800;
   background: linear-gradient(135deg, #ffffff 30%, var(--primary) 100%);
@@ -130,6 +131,7 @@ button, input, select, textarea {
 }
 
 .nav-link {
+  font-family: var(--font-ui);
   font-size: 0.95rem;
   font-weight: 500;
   color: var(--text-secondary);
@@ -226,7 +228,7 @@ button, input, select, textarea {
 }
 
 .hero-tagline {
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-size: 0.9rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -461,6 +463,7 @@ button, input, select, textarea {
 }
 
 .product-tag {
+  font-family: var(--font-ui);
   position: absolute;
   top: 16px;
   left: 16px;
@@ -483,6 +486,7 @@ button, input, select, textarea {
 }
 
 .product-brand {
+  font-family: var(--font-ui);
   font-size: 0.8rem;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -517,6 +521,7 @@ button, input, select, textarea {
 }
 
 .spec-badge {
+  font-family: var(--font-ui);
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border-glass);
   font-size: 0.75rem;
@@ -533,7 +538,7 @@ button, input, select, textarea {
 }
 
 .product-price {
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-size: 1.4rem;
   font-weight: 800;
   color: white;
@@ -734,7 +739,7 @@ button, input, select, textarea {
 }
 
 .total-value {
-  font-family: var(--font-display);
+  font-family: var(--font-ui);
   font-size: 1.5rem;
   font-weight: 800;
 }
