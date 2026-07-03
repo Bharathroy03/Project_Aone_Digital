@@ -9,7 +9,7 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
-  // Navigation View: 'home', 'checkout', 'confirmation'
+  // Navigation View: 'home', 'checkout', 'confirmation', 'admin-login', 'admin-dashboard'
   const [view, setView] = useState('home');
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -45,8 +45,27 @@ export default function App() {
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterSubscribed, setNewsletterSubscribed] = useState(false);
 
-  // Fetch products from Flask API on load
-  useEffect(() => {
+  // Admin Portal state variables
+  const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
+  const [adminCredentials, setAdminCredentials] = useState({ username: '', password: '' });
+  const [adminLoginError, setAdminLoginError] = useState(null);
+  
+  // Admin product creation / editing variables
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [editingProductId, setEditingProductId] = useState(null);
+  const [productForm, setProductForm] = useState({
+    name: '',
+    brand: '',
+    category: 'mobile',
+    price: '',
+    stock: '',
+    description: '',
+    image_url: '',
+    specifications: {}
+  });
+
+  const refreshProducts = () => {
+    setLoading(true);
     fetch('/api/products')
       .then((res) => {
         if (!res.ok) throw new Error('Failed to fetch product catalog.');
@@ -60,7 +79,86 @@ export default function App() {
         setError(err.message);
         setLoading(false);
       });
+  };
+
+  // Fetch products from Flask API on load
+  useEffect(() => {
+    refreshProducts();
   }, []);
+
+  const handleAdminLogin = (e) => {
+    e.preventDefault();
+    if (adminCredentials.username === 'Bharath' && adminCredentials.password === 'Bharath@123') {
+      setIsAdminLoggedIn(true);
+      setAdminLoginError(null);
+      setView('admin-dashboard');
+    } else {
+      setAdminLoginError('Invalid administrator credentials.');
+    }
+  };
+
+  const handleProductSubmit = (e) => {
+    e.preventDefault();
+    const endpoint = editingProductId ? `/api/products/${editingProductId}` : '/api/products';
+    const method = editingProductId ? 'PUT' : 'POST';
+
+    fetch(endpoint, {
+      method: method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(productForm)
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Operation failed');
+        return res.json();
+      })
+      .then(() => {
+        setIsProductModalOpen(false);
+        setEditingProductId(null);
+        setProductForm({
+          name: '',
+          brand: '',
+          category: 'mobile',
+          price: '',
+          stock: '',
+          description: '',
+          image_url: '',
+          specifications: {}
+        });
+        refreshProducts();
+      })
+      .catch((err) => alert(err.message));
+  };
+
+  const handleDeleteProduct = (productId) => {
+    if (!window.confirm('Are you sure you want to delete this product?')) return;
+    
+    fetch(`/api/products/${productId}`, {
+      method: 'DELETE'
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to delete product');
+        return res.json();
+      })
+      .then(() => {
+        refreshProducts();
+      })
+      .catch((err) => alert(err.message));
+  };
+
+  const handleEditClick = (product) => {
+    setEditingProductId(product.id);
+    setProductForm({
+      name: product.name || '',
+      brand: product.brand || '',
+      category: product.category || 'mobile',
+      price: product.price || '',
+      stock: product.stock || '',
+      description: product.description || '',
+      image_url: product.image_url || '',
+      specifications: product.specifications || {}
+    });
+    setIsProductModalOpen(true);
+  };
 
   const handleAddToCart = (product) => {
     setCart((prevCart) => {
@@ -186,9 +284,11 @@ export default function App() {
     document.getElementById('products-section')?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const showMainNavbar = view === 'home' || view === 'checkout' || view === 'confirmation';
+
   return (
     <div className="bg-background text-on-background font-body-md overflow-x-hidden min-h-screen flex flex-col justify-between">
-      <Header cartCount={cartCount} onCartClick={() => setIsCartOpen(true)} />
+      {showMainNavbar && <Header cartCount={cartCount} onCartClick={() => setIsCartOpen(true)} />}
 
       {view === 'home' && (
         <>
@@ -708,6 +808,295 @@ export default function App() {
         </section>
       )}
 
+      {/* Admin Login View */}
+      {view === 'admin-login' && (
+        <section className="max-w-md mx-auto my-36 p-8 md:p-12 glass rounded-[32px] shadow-2xl w-full px-margin-mobile">
+          <div className="text-center mb-8">
+            <h2 className="font-headline-md text-on-surface mb-2">Admin Portal</h2>
+            <p className="text-sm text-text-secondary">Please log in to manage your inventory.</p>
+          </div>
+          
+          <form onSubmit={handleAdminLogin} className="space-y-6">
+            {adminLoginError && (
+              <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-xs font-semibold text-center animate-pulse">
+                {adminLoginError}
+              </div>
+            )}
+            <div className="space-y-2">
+              <label className="text-ui-label-bold text-on-surface text-xs block">USERNAME</label>
+              <input 
+                type="text" 
+                className="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all" 
+                required 
+                placeholder="Enter username"
+                value={adminCredentials.username}
+                onChange={(e) => setAdminCredentials({ ...adminCredentials, username: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-ui-label-bold text-on-surface text-xs block">PASSWORD</label>
+              <input 
+                type="password" 
+                className="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all" 
+                required 
+                placeholder="Enter password"
+                value={adminCredentials.password}
+                onChange={(e) => setAdminCredentials({ ...adminCredentials, password: e.target.value })}
+              />
+            </div>
+            
+            <div className="flex gap-4">
+              <button 
+                type="button" 
+                className="w-1/2 py-3.5 border border-outline text-on-surface font-bold rounded-xl hover:bg-slate-50 transition-all text-sm cursor-pointer"
+                onClick={() => setView('home')}
+              >
+                Cancel
+              </button>
+              <button 
+                type="submit" 
+                className="w-1/2 py-3.5 bg-secondary text-white font-bold rounded-xl shadow-lg hover:bg-secondary-container transition-all text-sm cursor-pointer"
+              >
+                Login
+              </button>
+            </div>
+          </form>
+        </section>
+      )}
+
+      {/* Admin Dashboard View */}
+      {view === 'admin-dashboard' && (
+        <section className="py-28 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6 border-b border-outline-variant/30 pb-6">
+            <div>
+              <h2 className="font-headline-md text-on-surface">Admin Inventory Dashboard</h2>
+              <p className="text-text-secondary text-sm">Manage products, pricing, stock levels, and brand information.</p>
+            </div>
+            <div className="flex gap-3">
+              <button 
+                className="px-5 py-3 bg-secondary text-white font-bold rounded-xl shadow-md hover:bg-secondary-container hover:scale-105 transition-all text-xs flex items-center gap-2 cursor-pointer"
+                onClick={() => {
+                  setEditingProductId(null);
+                  setProductForm({
+                    name: '',
+                    brand: '',
+                    category: 'mobile',
+                    price: '',
+                    stock: '',
+                    description: '',
+                    image_url: '',
+                    specifications: {}
+                  });
+                  setIsProductModalOpen(true);
+                }}
+              >
+                <span className="material-symbols-outlined text-sm">add</span> Add New Product
+              </button>
+              <button 
+                className="px-5 py-3 border border-outline text-on-surface font-bold rounded-xl hover:bg-slate-50 hover:scale-105 transition-all text-xs flex items-center gap-2 cursor-pointer"
+                onClick={() => {
+                  setIsAdminLoggedIn(false);
+                  setView('home');
+                }}
+              >
+                <span className="material-symbols-outlined text-sm">logout</span> Logout
+              </button>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="text-center py-20 text-text-secondary">
+              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-secondary mx-auto mb-4"></div>
+              <p className="text-sm">Loading products...</p>
+            </div>
+          ) : (
+            <div className="bg-white border border-outline-variant/30 rounded-[32px] overflow-hidden shadow-xl">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-surface-container-low border-b border-outline-variant/50">
+                      <th className="p-6 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Product</th>
+                      <th className="p-6 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Category</th>
+                      <th className="p-6 text-xs font-bold text-on-surface-variant uppercase tracking-wider">Brand</th>
+                      <th className="p-6 text-xs font-bold text-on-surface-variant uppercase tracking-wider text-right">Price</th>
+                      <th className="p-6 text-xs font-bold text-on-surface-variant uppercase tracking-wider text-center">Stock</th>
+                      <th className="p-6 text-xs font-bold text-on-surface-variant uppercase tracking-wider text-center">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-outline-variant/20">
+                    {products.map((product) => (
+                      <tr key={product.id} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="p-6 flex items-center gap-4">
+                          <img 
+                            src={product.image_url} 
+                            alt={product.name} 
+                            className="w-12 h-12 rounded-xl object-contain bg-slate-50 border border-slate-100"
+                            onError={(e) => {
+                              e.target.src = "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=100&q=80";
+                            }}
+                          />
+                          <div>
+                            <span className="font-semibold text-on-surface text-sm block">{product.name}</span>
+                            <span className="text-[10px] text-text-muted font-mono">{product.id}</span>
+                          </div>
+                        </td>
+                        <td className="p-6 text-sm text-text-secondary capitalize">{product.category.replace('_', ' ')}</td>
+                        <td className="p-6 text-sm text-text-secondary">{product.brand}</td>
+                        <td className="p-6 text-sm text-on-surface font-bold text-right">₹{product.price.toLocaleString('en-IN')}</td>
+                        <td className="p-6 text-sm text-text-secondary text-center">
+                          <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${
+                            product.stock > 10 ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'
+                          }`}>
+                            {product.stock} units
+                          </span>
+                        </td>
+                        <td className="p-6 text-center">
+                          <div className="flex gap-2 justify-center">
+                            <button 
+                              className="p-2 text-secondary hover:bg-secondary/10 rounded-lg transition-colors flex items-center cursor-pointer"
+                              onClick={() => handleEditClick(product)}
+                              title="Edit product"
+                            >
+                              <span className="material-symbols-outlined text-lg">edit</span>
+                            </button>
+                            <button 
+                              className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center cursor-pointer"
+                              onClick={() => handleDeleteProduct(product.id)}
+                              title="Delete product"
+                            >
+                              <span className="material-symbols-outlined text-lg">delete</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* Product Add/Edit Modal */}
+      {isProductModalOpen && (
+        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-white border border-outline-variant/30 rounded-[32px] p-8 md:p-10 shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative my-8">
+            <button 
+              className="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-full transition-colors flex items-center cursor-pointer"
+              onClick={() => setIsProductModalOpen(false)}
+            >
+              <span className="material-symbols-outlined">close</span>
+            </button>
+            
+            <h3 className="font-headline-sm text-on-surface mb-6">
+              {editingProductId ? 'Edit Product Details' : 'Add New Product'}
+            </h3>
+            
+            <form onSubmit={handleProductSubmit} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-ui-label-bold text-on-surface text-xs block">PRODUCT NAME</label>
+                  <input 
+                    type="text" 
+                    className="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all" 
+                    required 
+                    placeholder="e.g. iPhone 15 Pro"
+                    value={productForm.name}
+                    onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-ui-label-bold text-on-surface text-xs block">BRAND</label>
+                  <input 
+                    type="text" 
+                    className="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all" 
+                    required 
+                    placeholder="e.g. Apple"
+                    value={productForm.brand}
+                    onChange={(e) => setProductForm({ ...productForm, brand: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="space-y-2">
+                  <label className="text-ui-label-bold text-on-surface text-xs block">CATEGORY</label>
+                  <select 
+                    className="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all"
+                    value={productForm.category}
+                    onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
+                  >
+                    <option value="mobile">Mobiles &amp; Tablets</option>
+                    <option value="home_appliance">Home Appliances</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-ui-label-bold text-on-surface text-xs block">PRICE (₹)</label>
+                  <input 
+                    type="number" 
+                    className="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all" 
+                    required 
+                    placeholder="e.g. 79900"
+                    value={productForm.price}
+                    onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-ui-label-bold text-on-surface text-xs block">STOCK COUNT</label>
+                  <input 
+                    type="number" 
+                    className="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all" 
+                    required 
+                    placeholder="e.g. 15"
+                    value={productForm.stock}
+                    onChange={(e) => setProductForm({ ...productForm, stock: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-ui-label-bold text-on-surface text-xs block">IMAGE URL</label>
+                <input 
+                  type="url" 
+                  className="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all" 
+                  placeholder="https://images.unsplash.com/..."
+                  value={productForm.image_url}
+                  onChange={(e) => setProductForm({ ...productForm, image_url: e.target.value })}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-ui-label-bold text-on-surface text-xs block">DESCRIPTION</label>
+                <textarea 
+                  rows="3" 
+                  className="w-full bg-white border border-outline-variant rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-secondary focus:border-secondary transition-all resize-none" 
+                  placeholder="Briefly describe the product..."
+                  value={productForm.description}
+                  onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
+                />
+              </div>
+
+              <div className="flex gap-4 pt-4 border-t border-outline-variant/30">
+                <button 
+                  type="button" 
+                  className="w-1/2 py-3.5 border border-outline text-on-surface font-bold rounded-xl hover:bg-slate-50 transition-all text-sm cursor-pointer"
+                  onClick={() => setIsProductModalOpen(false)}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  className="w-1/2 py-3.5 bg-secondary text-white font-bold rounded-xl shadow-lg hover:bg-secondary-container transition-all text-sm cursor-pointer"
+                >
+                  Save Product
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       {/* Cart Drawer overlays */}
       <CartDrawer 
         isOpen={isCartOpen}
@@ -722,92 +1111,97 @@ export default function App() {
       />
 
       {/* Floating Action Buttons */}
-      <div className="fixed bottom-8 right-8 z-[100] flex flex-col gap-4">
-        <a 
-          href="https://wa.me/917975774472" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="w-14 h-14 bg-[#25D366] text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform cursor-pointer"
-        >
-          <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24">
-            <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.284l-.539 2.016 2.049-.526c.947.517 2.002.81 3.23.811 3.18 0 5.764-2.583 5.765-5.763 0-3.18-2.583-5.788-5.757-5.788zm3.284 8.232c-.131.368-.684.693-.941.737-.257.045-.584.059-1.21-.197-2.613-1.071-4.303-3.738-4.434-3.913-.131-.175-1.066-1.417-1.066-2.702 0-1.285.671-1.921.908-2.184.237-.263.513-.329.684-.329.171 0 .342.001.488.007.155.006.363-.058.567.437.204.496.697 1.706.756 1.823.059.117.098.253.02.409-.079.156-.118.253-.236.389-.118.136-.25.304-.355.408-.118.118-.242.247-.105.485.137.237.608 1.004 1.303 1.623.893.796 1.649 1.042 1.886 1.161.237.118.375.098.513-.059.138-.156.592-.691.751-.926.158-.236.315-.197.533-.117.217.08 1.382.652 1.618.77.237.118.395.175.454.272.059.098.059.563-.073.931z"></path>
-          </svg>
-        </a>
-        <button 
-          className="w-14 h-14 bg-white text-secondary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform" 
-          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          aria-label="Back to top"
-        >
-          <span className="material-symbols-outlined">arrow_upward</span>
-        </button>
-      </div>
+      {showMainNavbar && (
+        <div className="fixed bottom-8 right-8 z-[100] flex flex-col gap-4">
+          <a 
+            href="https://wa.me/917975774472" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="w-14 h-14 bg-[#25D366] text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform cursor-pointer"
+          >
+            <svg className="w-8 h-8 fill-current" viewBox="0 0 24 24">
+              <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.284l-.539 2.016 2.049-.526c.947.517 2.002.81 3.23.811 3.18 0 5.764-2.583 5.765-5.763 0-3.18-2.583-5.788-5.757-5.788zm3.284 8.232c-.131.368-.684.693-.941.737-.257.045-.584.059-1.21-.197-2.613-1.071-4.303-3.738-4.434-3.913-.131-.175-1.066-1.417-1.066-2.702 0-1.285.671-1.921.908-2.184.237-.263.513-.329.684-.329.171 0 .342.001.488.007.155.006.363-.058.567.437.204.496.697 1.706.756 1.823.059.117.098.253.02.409-.079.156-.118.253-.236.389-.118.136-.25.304-.355.408-.118.118-.242.247-.105.485.137.237.608 1.004 1.303 1.623.893.796 1.649 1.042 1.886 1.161.237.118.375.098.513-.059.138-.156.592-.691.751-.926.158-.236.315-.197.533-.117.217.08 1.382.652 1.618.77.237.118.395.175.454.272.059.098.059.563-.073.931z"></path>
+            </svg>
+          </a>
+          <button 
+            className="w-14 h-14 bg-white text-secondary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform" 
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            aria-label="Back to top"
+          >
+            <span className="material-symbols-outlined">arrow_upward</span>
+          </button>
+        </div>
+      )}
 
       {/* Global footer */}
-      <footer className="bg-primary-container dark:bg-surface-container-lowest w-full pt-section-gap pb-8 mt-auto border-t border-white/10">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto text-on-primary-container font-body-md text-body-md text-sm">
-          <div className="space-y-6">
-            <span className="font-headline-md text-headline-md text-on-primary block select-none">Aone Digital</span>
-            <p className="max-w-xs text-on-primary-container/80 leading-relaxed">Experience the future of retail with India's most trusted premium electronics destination.</p>
-            <div className="flex gap-4">
-              <a className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition-colors" href="#">
-                <span className="material-symbols-outlined text-on-primary text-sm">public</span>
-              </a>
-              <a className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition-colors" href="#">
-                <span className="material-symbols-outlined text-on-primary text-sm">share</span>
-              </a>
+      {showMainNavbar && (
+        <footer className="bg-primary-container dark:bg-surface-container-lowest w-full pt-section-gap pb-8 mt-auto border-t border-white/10">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto text-on-primary-container font-body-md text-body-md text-sm">
+            <div className="space-y-6">
+              <span className="font-headline-md text-headline-md text-on-primary block select-none">Aone Digital</span>
+              <p className="max-w-xs text-on-primary-container/80 leading-relaxed">Experience the future of retail with India's most trusted premium electronics destination.</p>
+              <div className="flex gap-4">
+                <a className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition-colors" href="#">
+                  <span className="material-symbols-outlined text-on-primary text-sm">public</span>
+                </a>
+                <a className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center hover:bg-white/10 transition-colors" href="#">
+                  <span className="material-symbols-outlined text-on-primary text-sm">share</span>
+                </a>
+              </div>
+            </div>
+            <div>
+              <h4 className="text-white font-ui-label-bold mb-6">Product Categories</h4>
+              <ul className="space-y-3 text-on-primary-container/80">
+                <li><span className="hover:text-on-primary transition-colors cursor-pointer" onClick={() => { setCategoryFilter('mobile'); scrollIntoCatalog(); }}>Smartphones</span></li>
+                <li><span className="hover:text-on-primary transition-colors cursor-pointer" onClick={() => { setCategoryFilter('home_appliance'); scrollIntoCatalog(); }}>Appliances</span></li>
+                <li><span className="hover:text-on-primary transition-colors cursor-pointer" onClick={() => { setCategoryFilter('home_appliance'); scrollIntoCatalog(); }}>Smart Home</span></li>
+                <li><span className="hover:text-on-primary transition-colors cursor-pointer" onClick={() => { setCategoryFilter('mobile'); scrollIntoCatalog(); }}>Laptops</span></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-ui-label-bold mb-6">Quick Links</h4>
+              <ul className="space-y-3 text-on-primary-container/80">
+                <li><a className="hover:text-on-primary transition-colors" href="#">Store Locator</a></li>
+                <li><a className="hover:text-on-primary transition-colors" href="#">Support</a></li>
+                <li><a className="hover:text-on-primary transition-colors" href="#">Privacy Policy</a></li>
+                <li><a className="hover:text-on-primary transition-colors" href="#">Terms of Service</a></li>
+                <li><button className="hover:text-on-primary transition-colors cursor-pointer text-left" onClick={() => setView('admin-login')}>Admin Portal</button></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-ui-label-bold mb-6">Newsletter</h4>
+              <p className="mb-4 text-on-primary-container/80 leading-relaxed">Subscribe for early access to exclusive sales and product launches.</p>
+              {newsletterSubscribed ? (
+                <p className="text-status-success text-xs font-bold flex items-center gap-1">
+                  <span className="material-symbols-outlined text-sm">check_circle</span> Subscribed successfully!
+                </p>
+              ) : (
+                <form onSubmit={handleNewsletterSubmit} className="flex">
+                  <input 
+                    className="bg-white/10 border-0 rounded-l-xl px-4 py-3 text-white focus:ring-1 focus:ring-secondary outline-none flex-grow text-xs" 
+                    placeholder="Email" 
+                    type="email"
+                    required
+                    value={newsletterEmail}
+                    onChange={(e) => setNewsletterEmail(e.target.value)}
+                  />
+                  <button type="submit" className="bg-secondary px-4 rounded-r-xl text-white hover:bg-secondary-container transition-colors flex items-center justify-center" aria-label="Subscribe">
+                    <span className="material-symbols-outlined text-sm">send</span>
+                  </button>
+                </form>
+              )}
             </div>
           </div>
-          <div>
-            <h4 className="text-white font-ui-label-bold mb-6">Product Categories</h4>
-            <ul className="space-y-3 text-on-primary-container/80">
-              <li><span className="hover:text-on-primary transition-colors cursor-pointer" onClick={() => { setCategoryFilter('mobile'); scrollIntoCatalog(); }}>Smartphones</span></li>
-              <li><span className="hover:text-on-primary transition-colors cursor-pointer" onClick={() => { setCategoryFilter('home_appliance'); scrollIntoCatalog(); }}>Appliances</span></li>
-              <li><span className="hover:text-on-primary transition-colors cursor-pointer" onClick={() => { setCategoryFilter('home_appliance'); scrollIntoCatalog(); }}>Smart Home</span></li>
-              <li><span className="hover:text-on-primary transition-colors cursor-pointer" onClick={() => { setCategoryFilter('mobile'); scrollIntoCatalog(); }}>Laptops</span></li>
-            </ul>
+          <div className="mt-20 pt-8 border-t border-white/10 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto text-center">
+            <div className="space-y-2 text-xs">
+              <p className="text-ui-caption text-on-primary-container/60">© 2026 Aone Digital. All rights reserved.</p>
+              <p className="text-ui-caption text-on-primary-container/60">Designed &amp; Developed by Bharath Kumar</p>
+              <p className="text-ui-caption text-on-primary-container/60">Contact: 7975774472, WhatsApp: 8453036381</p>
+              <p className="text-ui-caption text-on-primary-container/60">Email: support@aonedigital.in | Admin: bharath.kumar@aonedigital.in</p>
+            </div>
           </div>
-          <div>
-            <h4 className="text-white font-ui-label-bold mb-6">Quick Links</h4>
-            <ul className="space-y-3 text-on-primary-container/80">
-              <li><a className="hover:text-on-primary transition-colors" href="#">Store Locator</a></li>
-              <li><a className="hover:text-on-primary transition-colors" href="#">Support</a></li>
-              <li><a className="hover:text-on-primary transition-colors" href="#">Privacy Policy</a></li>
-              <li><a className="hover:text-on-primary transition-colors" href="#">Terms of Service</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-white font-ui-label-bold mb-6">Newsletter</h4>
-            <p className="mb-4 text-on-primary-container/80 leading-relaxed">Subscribe for early access to exclusive sales and product launches.</p>
-            {newsletterSubscribed ? (
-              <p className="text-status-success text-xs font-bold flex items-center gap-1">
-                <span className="material-symbols-outlined text-sm">check_circle</span> Subscribed successfully!
-              </p>
-            ) : (
-              <form onSubmit={handleNewsletterSubmit} className="flex">
-                <input 
-                  className="bg-white/10 border-0 rounded-l-xl px-4 py-3 text-white focus:ring-1 focus:ring-secondary outline-none flex-grow text-xs" 
-                  placeholder="Email" 
-                  type="email"
-                  required
-                  value={newsletterEmail}
-                  onChange={(e) => setNewsletterEmail(e.target.value)}
-                />
-                <button type="submit" className="bg-secondary px-4 rounded-r-xl text-white hover:bg-secondary-container transition-colors flex items-center justify-center" aria-label="Subscribe">
-                  <span className="material-symbols-outlined text-sm">send</span>
-                </button>
-              </form>
-            )}
-          </div>
-        </div>
-        <div className="mt-20 pt-8 border-t border-white/10 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto text-center">
-          <div className="space-y-2 text-xs">
-            <p className="text-ui-caption text-on-primary-container/60">© 2026 Aone Digital. All rights reserved.</p>
-            <p className="text-ui-caption text-on-primary-container/60">Designed &amp; Developed by Bharath Kumar</p>
-            <p className="text-ui-caption text-on-primary-container/60">Contact: 7975774472, WhatsApp: 8453036381</p>
-            <p className="text-ui-caption text-on-primary-container/60">Email: support@aonedigital.in | Admin: bharath.kumar@aonedigital.in</p>
-          </div>
-        </div>
-      </footer>
+        </footer>
+      )}
     </div>
   );
 }

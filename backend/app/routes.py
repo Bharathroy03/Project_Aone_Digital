@@ -188,3 +188,83 @@ def contact():
         "message": f"Thank you for reaching out! We will reply to {data.get('email')} soon.",
         "status": "success"
     }), 200
+
+@api_bp.route("/products", methods=["POST"])
+def add_product():
+    from app import supabase_client
+    data = request.json
+    if not data or not data.get("name") or not data.get("price"):
+        return jsonify({"error": "Missing name or price"}), 400
+    
+    new_product = {
+        "id": data.get("id") or str(uuid.uuid4()),
+        "name": data.get("name"),
+        "category": data.get("category", "mobile"),
+        "brand": data.get("brand", "Generic"),
+        "price": float(data.get("price")),
+        "description": data.get("description", ""),
+        "image_url": data.get("image_url", ""),
+        "stock": int(data.get("stock", 10)),
+        "specifications": data.get("specifications", {}),
+        "featured": bool(data.get("featured", False))
+    }
+
+    if supabase_client and "your-supabase" not in supabase_client.supabase_url:
+        try:
+            response = supabase_client.table("products").insert(new_product).execute()
+            if response.data:
+                return jsonify(response.data[0]), 201
+        except Exception as e:
+            print(f"Supabase insert error: {e}")
+
+    # Fallback to local session update
+    MOCK_PRODUCTS.append(new_product)
+    return jsonify(new_product), 201
+
+@api_bp.route("/products/<product_id>", methods=["PUT"])
+def update_product(product_id):
+    from app import supabase_client
+    data = request.json
+    if not data:
+        return jsonify({"error": "No update data provided"}), 400
+    
+    if supabase_client and "your-supabase" not in supabase_client.supabase_url:
+        try:
+            response = supabase_client.table("products").update(data).eq("id", product_id).execute()
+            if response.data:
+                return jsonify(response.data[0]), 200
+        except Exception as e:
+            print(f"Supabase update error: {e}")
+
+    # Fallback to local session update
+    product = next((p for p in MOCK_PRODUCTS if p["id"] == product_id), None)
+    if not product:
+        return jsonify({"error": "Product not found"}), 404
+    
+    for key, value in data.items():
+        if key != "id":
+            if key == "price":
+                product[key] = float(value)
+            elif key == "stock":
+                product[key] = int(value)
+            else:
+                product[key] = value
+    return jsonify(product), 200
+
+@api_bp.route("/products/<product_id>", methods=["DELETE"])
+def delete_product(product_id):
+    from app import supabase_client
+    if supabase_client and "your-supabase" not in supabase_client.supabase_url:
+        try:
+            supabase_client.table("products").delete().eq("id", product_id).execute()
+            return jsonify({"message": "Product deleted successfully", "status": "success"}), 200
+        except Exception as e:
+            print(f"Supabase delete error: {e}")
+
+    # Fallback to local session update
+    global MOCK_PRODUCTS
+    product = next((p for p in MOCK_PRODUCTS if p["id"] == product_id), None)
+    if not product:
+        return jsonify({"error": "Product not found"}), 404
+    MOCK_PRODUCTS.remove(product)
+    return jsonify({"message": "Product deleted successfully", "status": "success"}), 200
