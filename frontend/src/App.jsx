@@ -133,7 +133,7 @@ export default function App() {
   const [productForm, setProductForm] = useState({
     name: '',
     brand: '',
-    category: 'mobile',
+    category: 'smart_phone',
     price: '',
     stock: '',
     description: '',
@@ -359,7 +359,7 @@ export default function App() {
         setProductForm({
           name: '',
           brand: '',
-          category: 'mobile',
+          category: 'smart_phone',
           price: '',
           stock: '',
           description: '',
@@ -676,13 +676,10 @@ export default function App() {
 
   // Filtered Products based on selection
   const getFilteredProducts = () => {
-    if (categoryFilter === 'mobile') {
-      return products.filter((p) => p.category === 'mobile');
+    if (categoryFilter === 'all') {
+      return products;
     }
-    if (categoryFilter === 'home_appliance') {
-      return products.filter((p) => p.category === 'home_appliance');
-    }
-    return products;
+    return products.filter((p) => p.category === categoryFilter);
   };
 
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
@@ -770,16 +767,16 @@ export default function App() {
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
               {[
-                { name: 'Smartphones', filter: 'mobile', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCdOdknTPsNr5zyg78-8NVthlIVquiPV6mAdXyjEs_IAsUWku7v8Y7REvjsFjFEXk7YQcQOd_Ql4B_14hyS53YG2UcmbzZ6a6wpkHkmoDGI7bDYWHcgdOLYAGOC3U_tkiJWOS4qQD_g5rB6td-CkJ00EKfHMfuqpCrCxjAc6jWZJVNmO0aJTXoYlpg7DzeLNII-iHCgzAWdP1B8LFZp-GJxmZI5hEXp0-LunSvkRzDQDkxpQV33ed4Y' },
-                { name: 'Smart TVs', filter: 'home_appliance', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDyKPkk8V2_k7JnwBsBwKRADfYVOxj44Lk5wJ4dvr_K8TjCTF9fZVjJ5H1RFMiHYbQYfyDdXOYjM46qOu_IOxiJ_ebZXr2Oh3dsWgaO_fFQ3iaDg-S4_webQ3z83uACNtVe0cVuGh7m7Cc0b3b8_ggpbpXMQN-9THokwkdPYMokaNYdcfb7hekrxrFvSVOd54Skbm_8x9o4odnxM8oa8ENIfVkTZvZ1PfIknZYCRZRTPd08neDz2Xql' },
-                { name: 'Laptops', filter: 'mobile', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBQGexpsqIjuOeeJiyayAiqB33_ebDyBWp5Pa7W1zuUNDwDiAUIUU2J3IaGXssudZCOyQvCZ_3ir9YQWcWTnquYw8nKEAvNhq3JVWOFkPFyJWTwVqbEh-jkbTE6acYOeehpUlZtqMsgh2eaeCktWrIib8DUYdH7xxLsTJPhM4bPj2MNO5puIsHEs_fsP9LOZSlavdIJ8nHvjH2B3B7C_S4QF0PUdbJXQU6aqZrzP7uYREs6yQGiRLfn' },
-                { name: 'Refrigerators', filter: 'home_appliance', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuClrCQkqLngs6_6g762UKkHunwxW-zNoHZM3EEzYuDu7Wd4mHbL1Ar5HpBkRyXWGWaEHFatxeSa8GBc0YbK5_rQLpFM_gF_rQQnrXv8lOXBNDQvfpWSpyEle8xclSL-ClFrOpYKota3iGMpWmy1E3kMpOD3x6-853hpV9FucOMuLLiikBS350nEV0AjJK8Xi9K7D52vK30NQoQGG0vSZGYaFLi8Dz79jV56dH13uEub2yA0zT07caxb' },
-                { name: 'Washing Machines', filter: 'home_appliance', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA4qI5XP952eDDSBpJ8W2_d8-Gopk_8xouu2K4NiDkl-2orsIeD3KKknlepeh2BipqSs4tDujYLn9LqOOVw0ll9qvMXMUUePMSLY5OUzMMHCLOH69WOBiZYez7H2tlJEEuhbtPhN78LAOJmdShnvDqvuyBatKpRMLnJxOYbu-6V4haRb5U4-g8Q72qK_vYhNb-rfRTtdZ9YASiJemA1MoqIenfQpfpPWRzyKDZVY8iIJ_gVlRjCYjyk' },
-                { name: 'Air Conditioners', filter: 'home_appliance', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBFLV2Bn1LCS4LeJdPrZjQFpL-cFBF5IlVO8WeAyjTlP9TGE8lmoGcGpsOVTisNPqfBc7K_Pg-8pLRJHIO3I1JJ4F4YagWzkmthKDaQ52toeTvkUEUnsqRAFQ3SOGVPXi_6XoCEDJB81Pzrlid_NM53ufkJ9_0-wqIgthMiQxyMo7X4l6TEplnTKf1yPsSipj0LysNeazfG_5niMkPqnOQK-PZIcAHHTuR3jQ8m-Emu_beOmdYeSBGg' },
-                { name: 'Kitchen Appliances', filter: 'home_appliance', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCqpkMQ4x4xAHAHf7jG8xC95joUBeR8lkl6pWge5_SSu3DPsnopDaxQg9j9DreXNVwpoQ7OMqOe2ti9jatOT8_gmxvvGEz_AoMLFbK_Py-knb7RjgWiLxtDdl64cTe1msLscds75A3DwwkwmLAw9x1jq1H21i6Ne0v_kKLQhS7fxj1xdKQF7wEXZT4j1xJt7TpGeBByQTtbB6B94GYjXAApiukT3UoAUz4S27t0LfDtqzP0Qy6_ZZF_' },
-                { name: 'Smart Watches', filter: 'mobile', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDJ9vxdHx3uFJqLuLR4yokiWkH30K55FCOTguzPSZVr9itxpaveGYUh4eGmju7TrNt9KjwE-S7Lqv0DTHXwTUr5fRl66gfISVNCr9Ko7rXehK3ByBI6bBzinUSRLRHt1ckBWq8DBEC3jLrxuCCn0qLe2RU6jlSDCRew2qcX-_S26ZNHacsiT4rK5ezCDdKmTPEnnj8G_u4hapqqabQP9Ij8L45wvj-XbU46c-BX1ogiCk-Yy6v9DpzB' },
-                { name: 'Audio Accessories', filter: 'mobile', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAMDtz6_ioW77EzTq1wqi7Alr3mez84oyeb0685Rnq51NQ2ybHBvtmWYAYfj0iKL3ilZMMdTS0-S4zxfjIWeuTLR1ppv3gofBZoX4rWoH87XXxAM6qo15x6x513WAcQ5x4c3M-26IXX3XoWkzhKeyd5neLpzIQLaTgYV0MiFezTHQdwhk_0Tu7Qn5aE_3Simb-spWVTBzJzageydAZl4ZZ6yyyIExDULIdzuhONYxLNPMxQLysSVYtI' },
-                { name: 'Robot Cleaners', filter: 'home_appliance', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCEqY5LrxZut0FWfW2rFzKauKChOttxrH1QNf8EOLYzTivwNfrVNCJ3p5Z0lXNFb36PlBbzt2Kw8D-LHyvvaDP2KeZ5vJWniDlsLeFfq-W27m5EOBT2sW4lwFmqQkZ-uuw6qj8_kSFpeYkvH1SSX688q69nbb4Isni7GcPSIByOVK5HYvnDn9j3DusbAYRfNz0RtK-wEcxiwf0gvuec1jHTc1qHHS-z0qS60p_CHQVOHD4NDKRiyujI' }
+                { name: 'Smartphones', filter: 'smart_phone', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCdOdknTPsNr5zyg78-8NVthlIVquiPV6mAdXyjEs_IAsUWku7v8Y7REvjsFjFEXk7YQcQOd_Ql4B_14hyS53YG2UcmbzZ6a6wpkHkmoDGI7bDYWHcgdOLYAGOC3U_tkiJWOS4qQD_g5rB6td-CkJ00EKfHMfuqpCrCxjAc6jWZJVNmO0aJTXoYlpg7DzeLNII-iHCgzAWdP1B8LFZp-GJxmZI5hEXp0-LunSvkRzDQDkxpQV33ed4Y' },
+                { name: 'Smart TVs', filter: 'smart_tv', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDyKPkk8V2_k7JnwBsBwKRADfYVOxj44Lk5wJ4dvr_K8TjCTF9fZVjJ5H1RFMiHYbQYfyDdXOYjM46qOu_IOxiJ_ebZXr2Oh3dsWgaO_fFQ3iaDg-S4_webQ3z83uACNtVe0cVuGh7m7Cc0b3b8_ggpbpXMQN-9THokwkdPYMokaNYdcfb7hekrxrFvSVOd54Skbm_8x9o4odnxM8oa8ENIfVkTZvZ1PfIknZYCRZRTPd08neDz2Xql' },
+                { name: 'Laptops', filter: 'laptop', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBQGexpsqIjuOeeJiyayAiqB33_ebDyBWp5Pa7W1zuUNDwDiAUIUU2J3IaGXssudZCOyQvCZ_3ir9YQWcWTnquYw8nKEAvNhq3JVWOFkPFyJWTwVqbEh-jkbTE6acYOeehpUlZtqMsgh2eaeCktWrIib8DUYdH7xxLsTJPhM4bPj2MNO5puIsHEs_fsP9LOZSlavdIJ8nHvjH2B3B7C_S4QF0PUdbJXQU6aqZrzP7uYREs6yQGiRLfn' },
+                { name: 'Refrigerators', filter: 'refrigerator', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuClrCQkqLngs6_6g762UKkHunwxW-zNoHZM3EEzYuDu7Wd4mHbL1Ar5HpBkRyXWGWaEHFatxeSa8GBc0YbK5_rQLpFM_gF_rQQnrXv8lOXBNDQvfpWSpyEle8xclSL-ClFrOpYKota3iGMpWmy1E3kMpOD3x6-853hpV9FucOMuLLiikBS350nEV0AjJK8Xi9K7D52vK30NQoQGG0vSZGYaFLi8Dz79jV56dH13uEub2yA0zT07caxb' },
+                { name: 'Washing Machines', filter: 'washing_machine', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuA4qI5XP952eDDSBpJ8W2_d8-Gopk_8xouu2K4NiDkl-2orsIeD3KKknlepeh2BipqSs4tDujYLn9LqOOVw0ll9qvMXMUUePMSLY5OUzMMHCLOH69WOBiZYez7H2tlJEEuhbtPhN78LAOJmdShnvDqvuyBatKpRMLnJxOYbu-6V4haRb5U4-g8Q72qK_vYhNb-rfRTtdZ9YASiJemA1MoqIenfQpfpPWRzyKDZVY8iIJ_gVlRjCYjyk' },
+                { name: 'Air Conditioners', filter: 'refrigerator', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBFLV2Bn1LCS4LeJdPrZjQFpL-cFBF5IlVO8WeAyjTlP9TGE8lmoGcGpsOVTisNPqfBc7K_Pg-8pLRJHIO3I1JJ4F4YagWzkmthKDaQ52toeTvkUEUnsqRAFQ3SOGVPXi_6XoCEDJB81Pzrlid_NM53ufkJ9_0-wqIgthMiQxyMo7X4l6TEplnTKf1yPsSipj0LysNeazfG_5niMkPqnOQK-PZIcAHHTuR3jQ8m-Emu_beOmdYeSBGg' },
+                { name: 'Kitchen Appliances', filter: 'refrigerator', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCqpkMQ4x4xAHAHf7jG8xC95joUBeR8lkl6pWge5_SSu3DPsnopDaxQg9j9DreXNVwpoQ7OMqOe2ti9jatOT8_gmxvvGEz_AoMLFbK_Py-knb7RjgWiLxtDdl64cTe1msLscds75A3DwwkwmLAw9x1jq1H21i6Ne0v_kKLQhS7fxj1xdKQF7wEXZT4j1xJt7TpGeBByQTtbB6B94GYjXAApiukT3UoAUz4S27t0LfDtqzP0Qy6_ZZF_' },
+                { name: 'Smart Watches', filter: 'smart_phone', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDJ9vxdHx3uFJqLuLR4yokiWkH30K55FCOTguzPSZVr9itxpaveGYUh4eGmju7TrNt9KjwE-S7Lqv0DTHXwTUr5fRl66gfISVNCr9Ko7rXehK3ByBI6bBzinUSRLRHt1ckBWq8DBEC3jLrxuCCn0qLe2RU6jlSDCRew2qcX-_S26ZNHacsiT4rK5ezCDdKmTPEnnj8G_u4hapqqabQP9Ij8L45wvj-XbU46c-BX1ogiCk-Yy6v9DpzB' },
+                { name: 'Audio Accessories', filter: 'smart_phone', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuAMDtz6_ioW77EzTq1wqi7Alr3mez84oyeb0685Rnq51NQ2ybHBvtmWYAYfj0iKL3ilZMMdTS0-S4zxfjIWeuTLR1ppv3gofBZoX4rWoH87XXxAM6qo15x6x513WAcQ5x4c3M-26IXX3XoWkzhKeyd5neLpzIQLaTgYV0MiFezTHQdwhk_0Tu7Qn5aE_3Simb-spWVTBzJzageydAZl4ZZ6yyyIExDULIdzuhONYxLNPMxQLysSVYtI' },
+                { name: 'Robot Cleaners', filter: 'refrigerator', img: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCEqY5LrxZut0FWfW2rFzKauKChOttxrH1QNf8EOLYzTivwNfrVNCJ3p5Z0lXNFb36PlBbzt2Kw8D-LHyvvaDP2KeZ5vJWniDlsLeFfq-W27m5EOBT2sW4lwFmqQkZ-uuw6qj8_kSFpeYkvH1SSX688q69nbb4Isni7GcPSIByOVK5HYvnDn9j3DusbAYRfNz0RtK-wEcxiwf0gvuec1jHTc1qHHS-z0qS60p_CHQVOHD4NDKRiyujI' }
               ].map((cat, idx) => (
                 <div 
                   key={idx} 
@@ -808,8 +805,8 @@ export default function App() {
               </div>
 
               {/* Filter Tabs */}
-              <div className="flex gap-2">
-                {['all', 'mobile', 'home_appliance'].map((filter) => (
+              <div className="flex gap-2 flex-wrap">
+                {['all', 'smart_phone', 'smart_tv', 'tablet', 'laptop', 'washing_machine', 'refrigerator'].map((filter) => (
                   <button 
                     key={filter} 
                     className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
@@ -819,7 +816,12 @@ export default function App() {
                     }`}
                     onClick={() => setCategoryFilter(filter)}
                   >
-                    {filter === 'all' ? 'All Products' : filter === 'mobile' ? 'Mobiles' : 'Home Appliances'}
+                    {filter === 'all' ? 'All' : 
+                     filter === 'smart_phone' ? 'Smart Phones' : 
+                     filter === 'smart_tv' ? 'Smart TV' : 
+                     filter === 'tablet' ? 'Tablet' : 
+                     filter === 'laptop' ? 'Laptop' : 
+                     filter === 'washing_machine' ? 'Washing Machine' : 'Refrigerator'}
                   </button>
                 ))}
               </div>
@@ -1678,7 +1680,7 @@ export default function App() {
                           setProductForm({
                             name: '',
                             brand: '',
-                            category: 'mobile',
+                            category: 'smart_phone',
                             price: '',
                             stock: '',
                             description: '',
@@ -2271,7 +2273,7 @@ export default function App() {
 
       {/* Product Add/Edit Modal */}
       {isProductModalOpen && (
-        <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
+        <div className="admin-font-override fixed inset-0 z-[150] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm overflow-y-auto">
           <div className="bg-white border border-outline-variant/30 rounded-[32px] p-8 md:p-10 shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative my-8">
             <button 
               className="absolute top-6 right-6 p-2 hover:bg-slate-100 rounded-full transition-colors flex items-center cursor-pointer"
@@ -2318,8 +2320,12 @@ export default function App() {
                     value={productForm.category}
                     onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
                   >
-                    <option value="mobile">Mobiles &amp; Tablets</option>
-                    <option value="home_appliance">Home Appliances</option>
+                    <option value="smart_phone">Smart Phones</option>
+                    <option value="smart_tv">Smart TV</option>
+                    <option value="tablet">Tablet</option>
+                    <option value="laptop">Laptop</option>
+                    <option value="washing_machine">Washing Machine</option>
+                    <option value="refrigerator">Refrigerator</option>
                   </select>
                 </div>
                 <div className="space-y-2">
@@ -2531,10 +2537,10 @@ export default function App() {
             <div>
               <h4 className="text-white font-ui-label-bold mb-6">Product Categories</h4>
               <ul className="space-y-3 text-on-primary-container/80">
-                <li><span className="hover:text-on-primary transition-colors cursor-pointer" onClick={() => { setCategoryFilter('mobile'); scrollIntoCatalog(); }}>Smartphones</span></li>
-                <li><span className="hover:text-on-primary transition-colors cursor-pointer" onClick={() => { setCategoryFilter('home_appliance'); scrollIntoCatalog(); }}>Appliances</span></li>
-                <li><span className="hover:text-on-primary transition-colors cursor-pointer" onClick={() => { setCategoryFilter('home_appliance'); scrollIntoCatalog(); }}>Smart Home</span></li>
-                <li><span className="hover:text-on-primary transition-colors cursor-pointer" onClick={() => { setCategoryFilter('mobile'); scrollIntoCatalog(); }}>Laptops</span></li>
+                <li><span className="hover:text-on-primary transition-colors cursor-pointer" onClick={() => { setCategoryFilter('smart_phone'); scrollIntoCatalog(); }}>Smartphones</span></li>
+                <li><span className="hover:text-on-primary transition-colors cursor-pointer" onClick={() => { setCategoryFilter('washing_machine'); scrollIntoCatalog(); }}>Washing Machines</span></li>
+                <li><span className="hover:text-on-primary transition-colors cursor-pointer" onClick={() => { setCategoryFilter('smart_tv'); scrollIntoCatalog(); }}>Smart TV</span></li>
+                <li><span className="hover:text-on-primary transition-colors cursor-pointer" onClick={() => { setCategoryFilter('laptop'); scrollIntoCatalog(); }}>Laptops</span></li>
               </ul>
             </div>
             <div>
