@@ -41,7 +41,7 @@ export default function ProductCard({ product, onAddToCart, isAdded }) {
 
       <div className="flex items-center justify-between border-t border-outline-variant/30 pt-4 mt-auto">
         <span className="font-ui-label-bold text-lg font-extrabold text-on-surface">
-          ${product.price.toFixed(2)}
+          ₹{product.price.toLocaleString('en-IN')}
         </span>
         <button 
           onClick={() => onAddToCart(product)}

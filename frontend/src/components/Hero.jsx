@@ -14,11 +14,11 @@ export default function Hero({ onExploreClick }) {
 
   return (
     <section 
-      className="relative min-h-[90vh] flex items-center justify-start overflow-hidden bg-cover bg-no-repeat bg-center lg:bg-right"
+      className="relative min-h-[90vh] flex items-center justify-start overflow-hidden bg-cover bg-center"
       style={{ backgroundImage: `url('${bgImg}')` }}
     >
-      {/* Dynamic responsive overlay: near-opaque on mobile, fading gradient on larger screens */}
-      <div className="absolute inset-0 bg-[#f9f9ff]/95 lg:bg-gradient-to-r lg:from-[#f9f9ff] lg:via-[#f9f9ff]/90 lg:to-transparent z-0"></div>
+      {/* Light gradient overlay that matches the theme background (#f9f9ff) for perfect readability */}
+      <div className="absolute inset-0 bg-gradient-to-r from-[#f9f9ff] via-[#f9f9ff]/90 to-[#f9f9ff]/10 z-0"></div>
 
       <div className="relative z-10 w-full max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-24">
         <div className="max-w-2xl reveal active">

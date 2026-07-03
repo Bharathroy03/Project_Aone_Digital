@@ -41,7 +41,7 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onUpdateQuantit
                 />
                 <div className="cart-item-details">
                   <h4 className="cart-item-name">{item.name}</h4>
-                  <p className="cart-item-price">${(item.price * item.quantity).toFixed(2)}</p>
+                  <p className="cart-item-price">₹{(item.price * item.quantity).toLocaleString('en-IN')}</p>
                   
                   <div className="quantity-controller">
                     <button className="qty-btn" onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}>-</button>
@@ -61,7 +61,7 @@ export default function CartDrawer({ isOpen, onClose, cartItems, onUpdateQuantit
           <div className="cart-footer">
             <div className="cart-total-row">
               <span className="total-label">Subtotal:</span>
-              <span className="total-value">${total.toFixed(2)}</span>
+              <span className="total-value">₹{total.toLocaleString('en-IN')}</span>
             </div>
             <button 
               className="w-full py-4 bg-secondary text-white font-bold rounded-xl shadow-lg hover:bg-secondary-container transition-all text-sm" 

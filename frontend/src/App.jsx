@@ -621,7 +621,7 @@ export default function App() {
                 />
               </div>
               <button type="submit" className="w-full py-4 bg-secondary text-white font-bold rounded-xl shadow-lg hover:bg-secondary-container transition-all">
-                Place Secure Order (${cartTotal.toFixed(2)})
+                Place Secure Order (₹{cartTotal.toLocaleString('en-IN')})
               </button>
             </form>
 
@@ -634,13 +634,13 @@ export default function App() {
                 {cart.map((item) => (
                   <div key={item.id} className="flex justify-between items-center text-xs">
                     <span className="text-text-secondary line-clamp-1 flex-1">{item.name} <strong className="text-on-surface">x{item.quantity}</strong></span>
-                    <span className="font-bold text-on-surface ml-2">${(item.price * item.quantity).toFixed(2)}</span>
+                    <span className="font-bold text-on-surface ml-2">₹{(item.price * item.quantity).toLocaleString('en-IN')}</span>
                   </div>
                 ))}
               </div>
               <div className="border-t border-outline-variant/30 pt-4 flex justify-between items-center font-bold">
                 <span className="text-xs text-text-secondary">Subtotal:</span>
-                <span className="text-lg text-secondary font-extrabold">${cartTotal.toFixed(2)}</span>
+                <span className="text-lg text-secondary font-extrabold">₹{cartTotal.toLocaleString('en-IN')}</span>
               </div>
             </div>
           </div>
