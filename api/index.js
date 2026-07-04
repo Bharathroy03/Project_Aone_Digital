@@ -9,7 +9,7 @@ app.use(express.json({ limit: '10mb' }));
 
 // Initialize Supabase Client
 const supabaseUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || 'https://zyqxiuoyrytsobuuqcwic.supabase.co';
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY || process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5cXhpdW95cnl0c2J1dXFjd2ljIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MzA0Nzk0NCwiZXhwIjoyMDk4NjIzOTQ0fQ.jDZqG3SVdYqR1OjRC5b0sWftLM52sXUV269GPs-ncto';
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5cXhpdW95cnl0c2J1dXFjd2ljIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MzA0Nzk0NCwiZXhwIjoyMDk4NjIzOTQ0fQ.jDZqG3SVdYqR1OjRC5b0sWftLM52sXUV269GPs-ncto';
 const ws = require('ws');
 const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: { persistSession: false },
