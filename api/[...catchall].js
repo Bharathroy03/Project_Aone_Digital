@@ -208,14 +208,15 @@ app.get('/api/settings', async (req, res, next) => {
   try {
     if (!supabaseUrl.includes('your-supabase-project')) {
       const { data, error } = await supabase.from('website_settings').select('*');
-      if (error) throw error;
-      if (data && data.length > 0) {
+      if (!error && data && data.length > 0) {
         return res.status(200).json(data[0].config || DEFAULT_SETTINGS);
       }
+      if (error) console.error('Supabase fetch website_settings failed:', error.message || error);
     }
     res.status(200).json(DEFAULT_SETTINGS);
   } catch (err) {
-    next(err);
+    console.error('GET settings fallback error:', err);
+    res.status(200).json(DEFAULT_SETTINGS);
   }
 });
 
@@ -242,12 +243,13 @@ app.get('/api/products', async (req, res, next) => {
   try {
     if (!supabaseUrl.includes('your-supabase-project')) {
       const { data, error } = await supabase.from('products').select('*');
-      if (error) throw error;
-      return res.status(200).json(data || []);
+      if (!error && data) return res.status(200).json(data);
+      if (error) console.error('Supabase fetch products failed:', error.message || error);
     }
     res.status(200).json(MOCK_PRODUCTS);
   } catch (err) {
-    next(err);
+    console.error('GET products fallback error:', err);
+    res.status(200).json(MOCK_PRODUCTS);
   }
 });
 
@@ -256,19 +258,18 @@ app.get('/api/products/:id', async (req, res, next) => {
     const { id } = req.params;
     if (!supabaseUrl.includes('your-supabase-project')) {
       const { data, error } = await supabase.from('products').select('*').eq('id', id).single();
-      if (error) {
-        if (error.code === 'PGRST116') {
-          return res.status(404).json({ error: 'Product not found' });
-        }
-        throw error;
+      if (!error && data) return res.status(200).json(data);
+      if (error && error.code === 'PGRST116') {
+        return res.status(404).json({ error: 'Product not found' });
       }
-      return res.status(200).json(data);
+      if (error) console.error('Supabase fetch single product failed:', error.message || error);
     }
     const match = MOCK_PRODUCTS.find(p => p.id === id);
     if (match) return res.status(200).json(match);
     res.status(404).json({ error: 'Product not found' });
   } catch (err) {
-    next(err);
+    console.error('GET product single fallback error:', err);
+    res.status(404).json({ error: 'Product not found' });
   }
 });
 
