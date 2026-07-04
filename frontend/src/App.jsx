@@ -989,7 +989,9 @@ export default function App() {
       body: JSON.stringify(productForm)
     })
       .then((res) => {
-        if (!res.ok) throw new Error('Operation failed');
+        if (!res.ok) {
+          return res.json().then((err) => { throw new Error(err.error || err.message || 'Operation failed'); });
+        }
         return res.json();
       })
       .then(() => {
@@ -1007,7 +1009,10 @@ export default function App() {
         });
         refreshProducts();
       })
-      .catch((err) => alert(err.message));
+      .catch((err) => {
+        logFrontendError('Product submission failed', err);
+        alert(err.message);
+      });
   };
 
   const handleDeleteProduct = (productId) => {
