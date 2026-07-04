@@ -399,7 +399,7 @@ export default function App() {
   const fetchBanners = (adminMode = false) => {
     setBannersLoading(true);
     fetch(`/api/banners${adminMode ? '?admin=1' : ''}`)
-      .then(r => r.json())
+      .then(handleFetchResponse)
       .then(data => { setBanners(data); setBannersLoading(false); })
       .catch(() => setBannersLoading(false));
   };
@@ -456,10 +456,7 @@ export default function App() {
       headers: { 'Content-Type': 'application/json', 'X-Admin-User': adminCredentials.username || 'Admin' },
       body: JSON.stringify(bannerForm),
     })
-      .then(r => {
-        if (!r.ok) return r.json().then(err => { throw new Error(err.error || 'Failed to submit banner'); });
-        return r.json();
-      })
+      .then(handleFetchResponse)
       .then(() => {
         setBannerForm({ title: '', subtitle: '', type: 'hero', image_url: '', link_url: '#', link_label: 'Shop Now', enabled: true, scheduled_start: '', scheduled_end: '', width: null, height: null });
         setBannerDimError('');
@@ -478,10 +475,7 @@ export default function App() {
       headers: { 'Content-Type': 'application/json', 'X-Admin-User': adminCredentials.username || 'Admin' },
       body: JSON.stringify({ enabled: !currentEnabled }),
     })
-      .then(r => {
-        if (!r.ok) return r.json().then(err => { throw new Error(err.error || 'Failed to update toggle state'); });
-        return r.json();
-      })
+      .then(handleFetchResponse)
       .then(() => { fetchBanners(true); fetchBanners(false); })
       .catch(err => {
         logFrontendError('Banner toggle failed', err);
@@ -495,10 +489,7 @@ export default function App() {
       method: 'DELETE',
       headers: { 'X-Admin-User': adminCredentials.username || 'Admin' },
     })
-      .then(r => {
-        if (!r.ok) return r.json().then(err => { throw new Error(err.error || 'Failed to delete banner'); });
-        return r.json();
-      })
+      .then(handleFetchResponse)
       .then(() => { fetchBanners(true); fetchBanners(false); })
       .catch(err => {
         logFrontendError('Banner deletion failed', err);
@@ -513,10 +504,7 @@ export default function App() {
       headers: { 'Content-Type': 'application/json', 'X-Admin-User': adminCredentials.username || 'Admin' },
       body: JSON.stringify({ sort_order: newOrder }),
     })
-      .then(r => {
-        if (!r.ok) return r.json().then(err => { throw new Error(err.error || 'Failed to reorder banner'); });
-        return r.json();
-      })
+      .then(handleFetchResponse)
       .then(() => fetchBanners(true))
       .catch(err => {
         logFrontendError('Banner reordering failed', err);
@@ -530,10 +518,7 @@ export default function App() {
       headers: { 'Content-Type': 'application/json', 'X-Admin-User': adminCredentials.username || 'Admin' },
       body: JSON.stringify({ [field]: value || null }),
     })
-      .then(r => {
-        if (!r.ok) return r.json().then(err => { throw new Error(err.error || 'Failed to update schedule'); });
-        return r.json();
-      })
+      .then(handleFetchResponse)
       .then(() => fetchBanners(true))
       .catch(err => {
         logFrontendError('Banner scheduling failed', err);
@@ -702,7 +687,7 @@ export default function App() {
 
   const fetchAnalytics = () => {
     fetch('/api/analytics')
-      .then((res) => res.json())
+      .then(handleFetchResponse)
       .then((data) => setAnalytics(data))
       .catch((err) => console.error('Analytics fetch error:', err));
   };
@@ -1012,12 +997,7 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(productForm)
     })
-      .then((res) => {
-        if (!res.ok) {
-          return res.json().then((err) => { throw new Error(err.error || err.message || 'Operation failed'); });
-        }
-        return res.json();
-      })
+      .then(handleFetchResponse)
       .then(() => {
         setIsProductModalOpen(false);
         setEditingProductId(null);
@@ -1045,14 +1025,14 @@ export default function App() {
     fetch(`/api/products/${productId}`, {
       method: 'DELETE'
     })
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to delete product');
-        return res.json();
-      })
+      .then(handleFetchResponse)
       .then(() => {
         refreshProducts();
       })
-      .catch((err) => alert(err.message));
+      .catch((err) => {
+        logFrontendError('Product deletion failed', err);
+        alert(err.message);
+      });
   };
 
   const handleEditClick = (product) => {
@@ -1113,15 +1093,15 @@ export default function App() {
       },
       body: JSON.stringify(settings)
     })
-      .then((res) => {
-        if (!res.ok) throw new Error('Settings update failed');
-        return res.json();
-      })
+      .then(handleFetchResponse)
       .then(() => {
         alert('Website settings updated and published successfully!');
         fetchSettings();
       })
-      .catch((err) => alert(err.message));
+      .catch((err) => {
+        logFrontendError('Settings update failed', err);
+        alert(err.message);
+      });
   };
 
   const handleRoleSubmit = (e) => {
@@ -1137,19 +1117,17 @@ export default function App() {
       },
       body: JSON.stringify(roleForm)
     })
-      .then((res) => {
-        if (!res.ok) {
-          return res.json().then((err) => { throw new Error(err.error || 'Operation failed'); });
-        }
-        return res.json();
-      })
+      .then(handleFetchResponse)
       .then(() => {
         setIsRoleModalOpen(false);
         setEditingRoleId(null);
         setRoleForm({ name: '', description: '', permissions: [] });
         fetchRoles();
       })
-      .catch((err) => alert(err.message));
+      .catch((err) => {
+        logFrontendError('Role submit failed', err);
+        alert(err.message);
+      });
   };
 
   const handleDeleteRole = (roleId) => {
@@ -1163,16 +1141,14 @@ export default function App() {
         'X-Admin-User': adminCredentials.username || 'Admin'
       }
     })
-      .then((res) => {
-        if (!res.ok) {
-          return res.json().then((err) => { throw new Error(err.error || 'Failed to delete role'); });
-        }
-        return res.json();
-      })
+      .then(handleFetchResponse)
       .then(() => {
         fetchRoles();
       })
-      .catch((err) => alert(err.message));
+      .catch((err) => {
+        logFrontendError('Role deletion failed', err);
+        alert(err.message);
+      });
   };
 
   const handleUserSubmit = (e) => {
@@ -1185,17 +1161,17 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userForm)
     })
-      .then((res) => {
-        if (!res.ok) throw new Error('User submit failed');
-        return res.json();
-      })
+      .then(handleFetchResponse)
       .then(() => {
         setIsUserModalOpen(false);
         setEditingUserId(null);
         setUserForm({ username: '', role: 'Content Editor', email: '', status: 'active' });
         fetchUsers();
       })
-      .catch((err) => alert(err.message));
+      .catch((err) => {
+        logFrontendError('User submission failed', err);
+        alert(err.message);
+      });
   };
 
   const handleToggleUserStatus = (user) => {
@@ -1209,12 +1185,12 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status: newStatus })
     })
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to update user status');
-        return res.json();
-      })
+      .then(handleFetchResponse)
       .then(() => fetchUsers())
-      .catch((err) => alert(err.message));
+      .catch((err) => {
+        logFrontendError('User status toggle failed', err);
+        alert(err.message);
+      });
   };
 
   const handleEditUserClick = (u) => {
@@ -1226,12 +1202,12 @@ export default function App() {
   const handleDeleteUser = (userId) => {
     if (!window.confirm('Are you sure you want to remove this user?')) return;
     fetch(`/api/users/${userId}`, { method: 'DELETE' })
-      .then((res) => {
-        if (!res.ok) throw new Error('Delete user failed');
-        return res.json();
-      })
+      .then(handleFetchResponse)
       .then(() => fetchUsers())
-      .catch((err) => alert(err.message));
+      .catch((err) => {
+        logFrontendError('User deletion failed', err);
+        alert(err.message);
+      });
   };
 
   const handleUpdateLeadStatus = (leadId, status, notes) => {
@@ -1243,12 +1219,15 @@ export default function App() {
       },
       body: JSON.stringify({ status, notes })
     })
-      .then((res) => res.json())
+      .then(handleFetchResponse)
       .then(() => {
         fetchLeads();
         setSelectedLead(null);
       })
-      .catch((err) => alert(err.message));
+      .catch((err) => {
+        logFrontendError('Lead status update failed', err);
+        alert(err.message);
+      });
   };
 
   const handleExportLeadsCSV = () => {
@@ -1305,9 +1284,12 @@ export default function App() {
   const handleDeleteMedia = (mediaId) => {
     if (!window.confirm('Delete this asset from media library?')) return;
     fetch(`/api/media/${mediaId}`, { method: 'DELETE' })
-      .then((res) => res.json())
+      .then(handleFetchResponse)
       .then(() => fetchMedia())
-      .catch((err) => alert(err.message));
+      .catch((err) => {
+        logFrontendError('Media deletion failed', err);
+        alert(err.message);
+      });
   };
 
   const handleAddToCart = (product) => {
@@ -1350,10 +1332,7 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: inquiryForm.email, name: inquiryForm.name, phone: inquiryForm.phone })
     })
-      .then((res) => {
-        if (!res.ok) throw new Error('Submission rejected by server');
-        return res.json();
-      })
+      .then(handleFetchResponse)
       .then((data) => {
         if (data.status === 'success') {
           setInquirySubmitted(true);
@@ -1370,7 +1349,7 @@ export default function App() {
       })
       .catch((err) => {
         logFrontendError('Connection error during inquiry submission', err);
-        alert('Submission Error: Unable to submit your inquiry. Please check your network and try again.');
+        alert(err.message || 'Submission Error: Unable to submit your inquiry. Please check your network and try again.');
       });
   };
 
@@ -1419,10 +1398,7 @@ export default function App() {
         notes: `Company: ${adInquiryForm.company || 'N/A'}\nSlot Size: ${adInquiryForm.size}\nSelected Slot: ${selectedPlacement}\nAdditional Notes: ${adInquiryForm.notes || 'None'}`
       })
     })
-      .then((res) => {
-        if (!res.ok) throw new Error('Submission rejected by server');
-        return res.json();
-      })
+      .then(handleFetchResponse)
       .then((data) => {
         if (data.status === 'success') {
           setAdInquirySubmitted(true);
@@ -1436,7 +1412,7 @@ export default function App() {
       })
       .catch((err) => {
         logFrontendError('Connection error during advertisement inquiry submission', err);
-        alert('Submission Error: We are unable to submit your advertisement request. Please check your network.');
+        alert(err.message || 'Submission Error: We are unable to submit your advertisement request. Please check your network.');
       });
   };
 
@@ -1467,10 +1443,7 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(orderData)
     })
-      .then((res) => {
-        if (!res.ok) throw new Error('Order creation failed on server');
-        return res.json();
-      })
+      .then(handleFetchResponse)
       .then((data) => {
         if (data.status === 'success') {
           setOrderId(data.order_id);
@@ -1483,7 +1456,7 @@ export default function App() {
       })
       .catch((err) => {
         logFrontendError('Connection error during order checkout submission', err);
-        alert('Order Error: Unable to complete your checkout. Please check your network and try again.');
+        alert(err.message || 'Order Error: Unable to complete your checkout. Please check your network and try again.');
       });
   };
 
@@ -1496,12 +1469,15 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: newsletterEmail })
     })
-      .then((res) => res.json())
+      .then(handleFetchResponse)
       .then((data) => {
         if (data.status === 'success') {
           setNewsletterSubscribed(true);
           setNewsletterEmail('');
         }
+      })
+      .catch((err) => {
+        logFrontendError('Newsletter subscription failed', err);
       });
   };
 
