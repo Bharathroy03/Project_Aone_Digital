@@ -127,26 +127,26 @@ export default function App() {
   };
 
   const handleFetchResponse = (res) => {
-    const contentType = res.headers.get('content-type');
-    
-    // Check if the response is HTML (which means it got redirected to index.html)
-    if (contentType && contentType.includes('text/html')) {
-      throw new Error(`Invalid response format: Expected JSON but received HTML. The API route might be misconfigured or returning index.html.`);
-    }
-
     if (!res.ok) {
-      if (contentType && contentType.includes('application/json')) {
-        return res.json().then((err) => { throw new Error(err.error || err.message || 'Operation failed'); });
-      } else {
-        return res.text().then((text) => {
-          throw new Error(`Server Error (${res.status}): ${text.substring(0, 150) || 'Unknown error'}`);
-        });
+      return res.text().then((text) => {
+        let errMsg = 'Operation failed';
+        try {
+          const err = JSON.parse(text);
+          errMsg = err.error || err.message || errMsg;
+        } catch {
+          errMsg = `Server Error (${res.status}): ${text.substring(0, 150) || 'Unknown error'}`;
+        }
+        throw new Error(errMsg);
+      });
+    }
+    return res.text().then((text) => {
+      if (!text) return {};
+      try {
+        return JSON.parse(text);
+      } catch (err) {
+        throw new Error(`Invalid response format from server: expected JSON but received text/HTML.`);
       }
-    }
-    if (contentType && contentType.includes('application/json')) {
-      return res.json();
-    }
-    return {};
+    });
   };
 
   const [products, setProducts] = useState([]);
