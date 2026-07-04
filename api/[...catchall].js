@@ -208,6 +208,16 @@ const logException = async (source, message, stackTrace = '', context = {}) => {
   MOCK_ERROR_LOGS.unshift(newErr);
 };
 
+app.get('/api/debug-errors', async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('error_logs').select('*').order('created_at', { ascending: false }).limit(10);
+    if (error) return res.status(500).json({ error: error.message, details: error });
+    res.status(200).json(data || []);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Error logging handler route
 app.post('/api/error-logs', async (req, res, next) => {
   try {
