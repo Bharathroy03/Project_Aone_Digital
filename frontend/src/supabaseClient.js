@@ -6,7 +6,7 @@ const getEnvUrl = () => {
   if (url && url !== 'undefined' && url !== 'null' && url.trim() !== '') {
     return url;
   }
-  return 'https://zyqxiuoyrytsobuuqcwic.supabase.co';
+  return 'https://zyqxiuoyrytsbuuqcwic.supabase.co';
 };
 
 const getEnvKey = () => {
