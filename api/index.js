@@ -406,11 +406,11 @@ app.post('/api/orders', async (req, res, next) => {
 
     console.log(`\n================ [EMAIL NOTIFICATION] ================`);
     console.log(`To: support@aonedigital.in, bharath.kumar@hreeem.com`);
-    console.log(`Subject: Aone Digital — New Order Placed #${orderId.substring(0,8).toUpperCase()}`);
+    console.log(`Subject: Aone Digital — New Order Placed #${orderId.substring(0, 8).toUpperCase()}`);
     console.log(`Body: Hello Admin, customer ${customer_name} placed an order.`);
     console.log(`======================================================\n`);
 
-    await logAction('System', `Dispatched new order placed email notification to bharath.kumar@hreeem.com for Order ID: ${orderId.substring(0,8).toUpperCase()}`);
+    await logAction('System', `Dispatched new order placed email notification to bharath.kumar@hreeem.com for Order ID: ${orderId.substring(0, 8).toUpperCase()}`);
 
     if (!supabaseUrl.includes('your-supabase-project')) {
       const { error: orderErr } = await supabase.from('orders').insert({
