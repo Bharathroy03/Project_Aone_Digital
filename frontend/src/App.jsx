@@ -905,27 +905,32 @@ export default function App() {
     }
 
     try {
-      if (!supabase || supabase.supabaseUrl.includes('your-supabase-project')) {
-        throw new Error('Supabase client not configured');
+      const base64Data = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = (err) => reject(err);
+        reader.readAsDataURL(file);
+      });
+
+      const res = await fetch('/api/media/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          file: base64Data.split(',')[1],
+          name: file.name,
+          type: file.type,
+          bucket: bucketName,
+          folder: folderPath
+        })
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Server upload failed');
       }
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
-      const filePath = folderPath ? `${folderPath}/${fileName}` : fileName;
 
-      const { data, error } = await supabase.storage
-        .from(bucketName)
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          upsert: false
-        });
-
-      if (error) throw error;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from(bucketName)
-        .getPublicUrl(filePath);
-
-      return publicUrl;
+      const data = await res.json();
+      return data.publicUrl;
     } catch (err) {
       console.error(`Supabase upload failed for bucket "${bucketName}":`, err);
       

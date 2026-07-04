@@ -722,6 +722,58 @@ app.post('/api/media', async (req, res, next) => {
   }
 });
 
+app.post('/api/media/upload', async (req, res, next) => {
+  try {
+    const { file, name, type, bucket, folder } = req.body || {};
+    if (!file || !bucket) {
+      return res.status(400).json({ error: 'Missing file data or bucket name' });
+    }
+
+    const bucketName = bucket;
+    const folderPath = folder || '';
+
+    // Ensure bucket exists on-the-fly
+    if (!supabaseUrl.includes('your-supabase-project')) {
+      try {
+        const { data: buckets } = await supabase.storage.listBuckets();
+        const exists = (buckets || []).some(b => b.name === bucketName);
+        if (!exists) {
+          await supabase.storage.createBucket(bucketName, { public: true });
+        }
+      } catch (bucketErr) {
+        console.error('Check/create bucket failed:', bucketErr.message || bucketErr);
+      }
+    }
+
+    const fileExt = name.split('.').pop();
+    const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+    const filePath = folderPath ? `${folderPath}/${fileName}` : fileName;
+
+    const fileBuffer = Buffer.from(file, 'base64');
+
+    if (!supabaseUrl.includes('your-supabase-project')) {
+      const { data, error } = await supabase.storage
+        .from(bucketName)
+        .upload(filePath, fileBuffer, {
+          contentType: type || 'image/png',
+          cacheControl: '3600',
+          upsert: true
+        });
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from(bucketName)
+        .getPublicUrl(filePath);
+
+      return res.status(200).json({ publicUrl });
+    }
+
+    res.status(200).json({ publicUrl: `https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=400&q=80` });
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.delete('/api/media/:id', async (req, res, next) => {
   try {
     const { id } = req.params;
