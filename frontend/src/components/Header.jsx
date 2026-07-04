@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
-export default function Header({ cartCount, onCartClick, settings }) {
+export default function Header({ cartCount, onCartClick, settings, onLogoClick, products = [] }) {
   const [logoFailed, setLogoFailed] = useState(false);
   const [activeLink, setActiveLink] = useState('Home');
   const [scrolled, setScrolled] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showResults, setShowResults] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Monitor scroll height to apply compact styling on scroll
   useEffect(() => {
@@ -19,6 +22,8 @@ export default function Header({ cartCount, onCartClick, settings }) {
   }, []);
 
   const logoUrl = settings?.hero?.logo_url || "/images/logo.png";
+  const logoHeight = settings?.hero?.logo_height || 48;
+  const scrolledHeight = Math.round(logoHeight * 0.75);
 
   return (
     <header 
@@ -35,13 +40,15 @@ export default function Header({ cartCount, onCartClick, settings }) {
             <img 
               src={logoUrl} 
               alt="Aone Digital" 
-              className={`object-contain transition-all duration-500 hover:scale-105 cursor-pointer ${
-                scrolled ? 'h-9 max-h-9' : 'h-12 max-h-12'
-              }`}
+              className="object-contain transition-all duration-500 hover:scale-105 cursor-pointer"
+              style={{
+                height: scrolled ? `${scrolledHeight}px` : `${logoHeight}px`,
+                maxHeight: scrolled ? `${scrolledHeight}px` : `${logoHeight}px`
+              }}
               onError={() => setLogoFailed(true)}
               onClick={() => {
                 setActiveLink('Home');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                if (onLogoClick) onLogoClick();
               }}
             />
           ) : (
@@ -49,7 +56,7 @@ export default function Header({ cartCount, onCartClick, settings }) {
               className="flex items-center gap-2 cursor-pointer select-none group"
               onClick={() => {
                 setActiveLink('Home');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                if (onLogoClick) onLogoClick();
               }}
             >
               <span className="material-symbols-outlined text-secondary text-2xl transition-transform duration-300 group-hover:rotate-12">grid_view</span>
@@ -88,6 +95,62 @@ export default function Header({ cartCount, onCartClick, settings }) {
 
         {/* Action Button Area */}
         <div className="flex items-center gap-4">
+          {/* Search Bar */}
+          <div className="relative hidden lg:block w-48 xl:w-60">
+            <div className="flex items-center bg-slate-50 border border-slate-200/80 rounded-full px-3.5 py-1.5 focus-within:ring-2 focus-within:ring-secondary/20 focus-within:border-secondary transition-all">
+              <span className="material-symbols-outlined text-slate-400 text-sm">search</span>
+              <input 
+                type="text" 
+                placeholder="Search products..." 
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setShowResults(true);
+                }}
+                onFocus={() => setShowResults(true)}
+                onBlur={() => setTimeout(() => setShowResults(false), 250)}
+                className="bg-transparent border-none text-xs text-slate-700 outline-none w-full ml-1.5 font-bold"
+              />
+            </div>
+
+            {/* Search Dropdown Results */}
+            {showResults && searchQuery.trim() !== '' && (() => {
+              const matches = (products || []).filter(p => 
+                p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (p.brand && p.brand.toLowerCase().includes(searchQuery.toLowerCase()))
+              ).slice(0, 5);
+
+              return (
+                <div className="absolute top-full right-0 mt-2 w-72 bg-white border border-slate-100 shadow-2xl rounded-2xl overflow-hidden py-1 z-[120] animate-fade-in font-body-md">
+                  {matches.length > 0 ? (
+                    matches.map(p => (
+                      <div 
+                        key={p.id}
+                        onClick={() => {
+                          window.open(`/?search=${encodeURIComponent(p.name)}`, '_blank');
+                          setSearchQuery('');
+                          setShowResults(false);
+                        }}
+                        className="flex items-center gap-3 px-3 py-2 hover:bg-slate-50 cursor-pointer transition-colors border-b border-slate-100 last:border-0"
+                      >
+                        <img src={p.image_url} alt={p.name} className="w-8 h-8 object-contain bg-slate-50 rounded p-0.5 shrink-0" />
+                        <div className="flex-grow overflow-hidden text-left">
+                          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wide block leading-none">{p.brand}</span>
+                          <span className="text-xs text-slate-800 font-bold block truncate mt-0.5">{p.name}</span>
+                        </div>
+                        <span className="text-xs font-bold text-secondary text-right shrink-0">₹{p.price.toLocaleString('en-IN')}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-4 text-xs text-slate-400 font-semibold">
+                      No matching products found
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+          </div>
+
           <button 
             className="p-3 bg-slate-50 hover:bg-secondary border border-slate-100 hover:border-secondary hover:text-white rounded-full shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 active:scale-95 relative group cursor-pointer" 
             onClick={onCartClick} 
@@ -100,8 +163,50 @@ export default function Header({ cartCount, onCartClick, settings }) {
               </span>
             )}
           </button>
+
+          {/* Hamburger button visible on mobile/tablet */}
+          <button 
+            className="md:hidden p-3 bg-slate-50 hover:bg-slate-100 rounded-full border border-slate-100 transition-all flex items-center justify-center cursor-pointer text-slate-700"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label="Toggle navigation menu"
+          >
+            <span className="material-symbols-outlined text-xl">
+              {mobileMenuOpen ? 'close' : 'menu'}
+            </span>
+          </button>
         </div>
       </nav>
+
+      {/* Mobile Navigation Dropdown */}
+      {mobileMenuOpen && (
+        <div className="md:hidden absolute top-[calc(100%+12px)] left-[4%] w-[92%] bg-white border border-slate-200 shadow-2xl rounded-3xl p-6 space-y-3 z-40 animate-fade-in text-left">
+          {[
+            { name: 'Home', href: '#' },
+            { name: 'Products', href: '#categories' },
+            { name: 'Offers', href: '#offers' },
+            { name: 'Contact', href: '#contact' }
+          ].map((item) => {
+            const isActive = activeLink === item.name;
+            return (
+              <a 
+                key={item.name}
+                href={item.href}
+                onClick={() => {
+                  setActiveLink(item.name);
+                  setMobileMenuOpen(false);
+                }}
+                className={`block py-2.5 px-4 font-body-md text-sm font-semibold tracking-wide rounded-xl transition-all ${
+                  isActive 
+                    ? 'text-white bg-secondary font-bold' 
+                    : 'text-on-surface hover:bg-slate-50 hover:text-secondary'
+                }`}
+              >
+                {item.name}
+              </a>
+            );
+          })}
+        </div>
+      )}
     </header>
   );
 }
