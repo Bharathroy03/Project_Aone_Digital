@@ -945,7 +945,7 @@ export default function App() {
         })
       }).catch(() => {});
 
-      throw new Error(`Supabase Storage upload failed: ${err.message || err}. Please configure your Storage bucket and policies.`);
+      throw new Error(`Supabase Storage upload failed: ${err.message || err}`);
     }
   };
 
