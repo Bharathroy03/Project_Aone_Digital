@@ -431,14 +431,20 @@ export default function App() {
       headers: { 'Content-Type': 'application/json', 'X-Admin-User': adminCredentials.username || 'Admin' },
       body: JSON.stringify(bannerForm),
     })
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) return r.json().then(err => { throw new Error(err.error || 'Failed to submit banner'); });
+        return r.json();
+      })
       .then(() => {
         setBannerForm({ title: '', subtitle: '', type: 'hero', image_url: '', link_url: '#', link_label: 'Shop Now', enabled: true, scheduled_start: '', scheduled_end: '', width: null, height: null });
         setBannerDimError('');
         fetchBanners(true);
         fetchBanners(false);
       })
-      .catch(err => alert(err.message));
+      .catch(err => {
+        logFrontendError('Banner creation failed', err);
+        alert(err.message);
+      });
   };
 
   const handleBannerToggle = (bannerId, currentEnabled) => {
@@ -446,7 +452,16 @@ export default function App() {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'X-Admin-User': adminCredentials.username || 'Admin' },
       body: JSON.stringify({ enabled: !currentEnabled }),
-    }).then(() => { fetchBanners(true); fetchBanners(false); });
+    })
+      .then(r => {
+        if (!r.ok) return r.json().then(err => { throw new Error(err.error || 'Failed to update toggle state'); });
+        return r.json();
+      })
+      .then(() => { fetchBanners(true); fetchBanners(false); })
+      .catch(err => {
+        logFrontendError('Banner toggle failed', err);
+        alert(err.message);
+      });
   };
 
   const handleBannerDelete = (bannerId, title) => {
@@ -454,7 +469,16 @@ export default function App() {
     fetch(`/api/banners/${bannerId}`, {
       method: 'DELETE',
       headers: { 'X-Admin-User': adminCredentials.username || 'Admin' },
-    }).then(() => { fetchBanners(true); fetchBanners(false); });
+    })
+      .then(r => {
+        if (!r.ok) return r.json().then(err => { throw new Error(err.error || 'Failed to delete banner'); });
+        return r.json();
+      })
+      .then(() => { fetchBanners(true); fetchBanners(false); })
+      .catch(err => {
+        logFrontendError('Banner deletion failed', err);
+        alert(err.message);
+      });
   };
 
   const handleBannerReorder = (bannerId, direction, currentOrder) => {
@@ -463,7 +487,16 @@ export default function App() {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'X-Admin-User': adminCredentials.username || 'Admin' },
       body: JSON.stringify({ sort_order: newOrder }),
-    }).then(() => fetchBanners(true));
+    })
+      .then(r => {
+        if (!r.ok) return r.json().then(err => { throw new Error(err.error || 'Failed to reorder banner'); });
+        return r.json();
+      })
+      .then(() => fetchBanners(true))
+      .catch(err => {
+        logFrontendError('Banner reordering failed', err);
+        alert(err.message);
+      });
   };
 
   const handleBannerSchedule = (bannerId, field, value) => {
@@ -471,7 +504,16 @@ export default function App() {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json', 'X-Admin-User': adminCredentials.username || 'Admin' },
       body: JSON.stringify({ [field]: value || null }),
-    }).then(() => fetchBanners(true));
+    })
+      .then(r => {
+        if (!r.ok) return r.json().then(err => { throw new Error(err.error || 'Failed to update schedule'); });
+        return r.json();
+      })
+      .then(() => fetchBanners(true))
+      .catch(err => {
+        logFrontendError('Banner scheduling failed', err);
+        alert(err.message);
+      });
   };
 
   // Dashboard CMS lists
