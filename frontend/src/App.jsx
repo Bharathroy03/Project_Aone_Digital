@@ -126,6 +126,23 @@ export default function App() {
     showNotification(message, isSuccess ? 'success' : 'error');
   };
 
+  const handleFetchResponse = (res) => {
+    const contentType = res.headers.get('content-type');
+    if (!res.ok) {
+      if (contentType && contentType.includes('application/json')) {
+        return res.json().then((err) => { throw new Error(err.error || err.message || 'Operation failed'); });
+      } else {
+        return res.text().then((text) => {
+          throw new Error(`Server Error (${res.status}): ${text.substring(0, 150) || 'Unknown error'}`);
+        });
+      }
+    }
+    if (contentType && contentType.includes('application/json')) {
+      return res.json();
+    }
+    return {};
+  };
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -416,8 +433,10 @@ export default function App() {
 
       const publicUrl = await uploadToSupabase(file, 'banners', 'slides');
       setBannerForm(prev => ({ ...prev, image_url: publicUrl, width: dims?.w || null, height: dims?.h || null }));
-    } catch {
-      setBannerDimError('Could not read image file.');
+    } catch (err) {
+      logFrontendError('Banner image upload failed', err);
+      alert(err.message || 'Could not read image file.');
+      setBannerDimError(err.message || 'Could not read image file.');
     } finally {
       setBannerUploading(false);
     }
@@ -567,10 +586,7 @@ export default function App() {
   const refreshProducts = () => {
     setLoading(true);
     fetch('/api/products')
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch product catalog.');
-        return res.json();
-      })
+      .then(handleFetchResponse)
       .then((data) => {
         setProducts(data);
         setLoading(false);
@@ -584,7 +600,7 @@ export default function App() {
   const fetchSettings = () => {
     setSettingsLoading(true);
     fetch('/api/settings')
-      .then((res) => res.json())
+      .then(handleFetchResponse)
       .then((data) => {
         if (data) {
           if (data.categories) {
@@ -631,49 +647,49 @@ export default function App() {
 
   const fetchOrders = () => {
     fetch('/api/orders')
-      .then((res) => res.json())
+      .then(handleFetchResponse)
       .then((data) => setOrders(data))
       .catch((err) => console.error('Orders fetch error:', err));
   };
 
   const fetchLeads = () => {
     fetch('/api/leads')
-      .then((res) => res.json())
+      .then(handleFetchResponse)
       .then((data) => setLeads(data))
       .catch((err) => console.error('Leads fetch error:', err));
   };
 
   const fetchMedia = () => {
     fetch('/api/media')
-      .then((res) => res.json())
+      .then(handleFetchResponse)
       .then((data) => setMedia(data))
       .catch((err) => console.error('Media fetch error:', err));
   };
 
   const fetchUsers = () => {
     fetch('/api/users')
-      .then((res) => res.json())
+      .then(handleFetchResponse)
       .then((data) => setUsers(data))
       .catch((err) => console.error('Users fetch error:', err));
   };
 
   const fetchRoles = () => {
     fetch('/api/roles')
-      .then((res) => res.json())
+      .then(handleFetchResponse)
       .then((data) => setRoles(data))
       .catch((err) => console.error('Roles fetch error:', err));
   };
 
   const fetchPermissions = () => {
     fetch('/api/permissions')
-      .then((res) => res.json())
+      .then(handleFetchResponse)
       .then((data) => setPermissions(data))
       .catch((err) => console.error('Permissions fetch error:', err));
   };
 
   const fetchAuditLogs = () => {
     fetch('/api/audit-logs')
-      .then((res) => res.json())
+      .then(handleFetchResponse)
       .then((data) => setAuditLogs(data))
       .catch((err) => console.error('Audit logs fetch error:', err));
   };
@@ -920,7 +936,7 @@ export default function App() {
 
       return publicUrl;
     } catch (err) {
-      console.warn(`Supabase upload failed for bucket "${bucketName}", using local base64 fallback:`, err);
+      console.error(`Supabase upload failed for bucket "${bucketName}":`, err);
       
       // Log storage exception to backend
       fetch('/api/error-logs', {
@@ -933,7 +949,7 @@ export default function App() {
         })
       }).catch(() => {});
 
-      return await fileToBase64(file);
+      throw new Error(`Supabase Storage upload failed: ${err.message || err}. Please configure your Storage bucket and policies.`);
     }
   };
 
@@ -973,6 +989,8 @@ export default function App() {
     try {
       const publicUrl = await uploadToSupabase(file, 'product-images', 'products');
       setProductForm({ ...productForm, image_url: publicUrl });
+    } catch (err) {
+      alert(err.message);
     } finally {
       setUploadingImage(false);
     }
