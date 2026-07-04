@@ -128,6 +128,12 @@ export default function App() {
 
   const handleFetchResponse = (res) => {
     const contentType = res.headers.get('content-type');
+    
+    // Check if the response is HTML (which means it got redirected to index.html)
+    if (contentType && contentType.includes('text/html')) {
+      throw new Error(`Invalid response format: Expected JSON but received HTML. The API route might be misconfigured or returning index.html.`);
+    }
+
     if (!res.ok) {
       if (contentType && contentType.includes('application/json')) {
         return res.json().then((err) => { throw new Error(err.error || err.message || 'Operation failed'); });
