@@ -32,6 +32,149 @@ const supabase = createClient(supabaseUrl, supabaseKey, {
   realtime: { transport: ws }
 });
 
+async function backfillBrandsAndCategoryBrands() {
+  if (supabaseUrl.includes('your-supabase-project')) return;
+  try {
+    const { error: bCheckError } = await supabase.from('brands').select('id').limit(1);
+    if (bCheckError) {
+      if (bCheckError.message.includes('relation "public.brands" does not exist') || bCheckError.message.includes('does not exist')) {
+        console.log('Supabase brands table does not exist yet. Programmatic backfill skipped.');
+        return;
+      }
+    }
+
+    const { data: currentBrands } = await supabase.from('brands').select('*');
+    const brandMap = new Map();
+    if (currentBrands) {
+      currentBrands.forEach(b => brandMap.set(b.name.toLowerCase().trim(), b.id));
+    }
+
+    const brandsToSeed = new Set();
+    const mappingsToSeed = [];
+
+    DEFAULT_SETTINGS.categories.forEach(cat => {
+      if (cat.brands) {
+        cat.brands.forEach(brand => {
+          const bName = brand.trim();
+          if (bName) {
+            brandsToSeed.add(bName);
+            mappingsToSeed.push({ category_id: cat.filterKey, brand_name: bName });
+          }
+        });
+      }
+    });
+
+    const { data: dbProducts } = await supabase.from('products').select('category, brand');
+    if (dbProducts) {
+      dbProducts.forEach(p => {
+        const cat = p.category;
+        const brand = p.brand;
+        if (cat && brand) {
+          const bName = brand.trim();
+          if (bName) {
+            brandsToSeed.add(bName);
+            mappingsToSeed.push({ category_id: cat, brand_name: bName });
+          }
+        }
+      });
+    }
+
+    for (const bName of brandsToSeed) {
+      const lowerName = bName.toLowerCase().trim();
+      if (!brandMap.has(lowerName)) {
+        const { data: newBrand, error: insertError } = await supabase
+          .from('brands')
+          .insert({ name: bName })
+          .select()
+          .single();
+        if (!insertError && newBrand) {
+          brandMap.set(lowerName, newBrand.id);
+          console.log(`Programmatic Seed: Created brand '${bName}'`);
+        } else if (insertError) {
+          console.error(`Failed to insert brand ${bName}:`, insertError.message);
+        }
+      }
+    }
+
+    const mappingsInserted = new Set();
+    const { data: existingMappings } = await supabase.from('category_brands').select('*');
+    if (existingMappings) {
+      existingMappings.forEach(m => {
+        mappingsInserted.add(`${m.category_id}:${m.brand_id}`);
+      });
+    }
+
+    for (const mapping of mappingsToSeed) {
+      const bId = brandMap.get(mapping.brand_name.toLowerCase().trim());
+      if (bId) {
+        const key = `${mapping.category_id}:${bId}`;
+        if (!mappingsInserted.has(key)) {
+          const { error: mapError } = await supabase
+            .from('category_brands')
+            .insert({ category_id: mapping.category_id, brand_id: bId });
+          if (!mapError) {
+            mappingsInserted.add(key);
+            console.log(`Programmatic Seed: Mapped category '${mapping.category_id}' -> brand '${mapping.brand_name}'`);
+          } else {
+            console.error(`Failed to map category ${mapping.category_id} to brand ${mapping.brand_name}:`, mapError.message);
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Programmatic backfill check failed:', err);
+  }
+}
+
+async function backfillCategories() {
+  if (supabaseUrl.includes('your-supabase-project')) return;
+  try {
+    const { error: cCheckError } = await supabase.from('categories').select('id').limit(1);
+    if (cCheckError) {
+      if (cCheckError.message.includes('relation "public.categories" does not exist') || cCheckError.message.includes('does not exist')) {
+        console.log('Supabase categories table does not exist yet. Programmatic categories backfill skipped.');
+        return;
+      }
+    }
+
+    let categoriesToSeed = [...DEFAULT_SETTINGS.categories];
+    const { data: wsData } = await supabase.from('website_settings').select('*');
+    if (wsData && wsData.length > 0 && wsData[0].config && wsData[0].config.categories) {
+      categoriesToSeed = wsData[0].config.categories;
+    }
+
+    const { data: currentDbCats } = await supabase.from('categories').select('filter_key');
+    const existingKeys = new Set(currentDbCats ? currentDbCats.map(c => c.filter_key) : []);
+
+    for (const cat of categoriesToSeed) {
+      if (!existingKeys.has(cat.filterKey)) {
+        const { error: insertError } = await supabase
+          .from('categories')
+          .insert({
+            title: cat.title,
+            emoji: cat.emoji || '📦',
+            filter_key: cat.filterKey
+          });
+        if (!insertError) {
+          existingKeys.add(cat.filterKey);
+          console.log(`Programmatic Seed: Created category '${cat.title}'`);
+        } else {
+          console.error(`Failed to seed category '${cat.title}':`, insertError.message);
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Programmatic categories backfill check failed:', err);
+  }
+}
+
+async function runSeeding() {
+  await backfillCategories();
+  await backfillBrandsAndCategoryBrands();
+}
+
+runSeeding();
+
 // --- Defaults and Mock Data Fallbacks ---
 const DEFAULT_SETTINGS = {
   announcement: {
@@ -227,19 +370,221 @@ app.post('/api/error-logs', async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+
+});
+
+// Brands endpoints
+app.get('/api/categories/:category_id/brands', async (req, res, next) => {
+  try {
+    const { category_id } = req.params;
+    if (!supabaseUrl.includes('your-supabase-project')) {
+      const { data, error } = await supabase
+        .from('category_brands')
+        .select('brands ( id, name )')
+        .eq('category_id', category_id);
+
+      if (error) {
+        console.error(`Supabase fetch category brands for ${category_id} failed:`, error.message || error);
+      } else if (data) {
+        const formattedBrands = data.map(item => item.brands).filter(Boolean);
+        return res.status(200).json(formattedBrands);
+      }
+    }
+
+    // Mock fallback
+    const localCat = DEFAULT_SETTINGS.categories.find(c => c.filterKey === category_id);
+    const localBrands = localCat ? localCat.brands.map((b, idx) => ({ id: idx + 1, name: b })) : [];
+    res.status(200).json(localBrands);
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/api/brands', async (req, res, next) => {
+  try {
+    const { name, category_id } = req.body;
+    if (!name || !category_id) {
+      return res.status(400).json({ error: 'Missing brand name or category_id' });
+    }
+
+    const trimmedName = name.trim();
+
+    if (!supabaseUrl.includes('your-supabase-project')) {
+      // 1. Find or create brand
+      let brandId;
+      const { data: existingBrand, error: fError } = await supabase
+        .from('brands')
+        .select('*')
+        .ilike('name', trimmedName)
+        .maybeSingle();
+
+      if (fError) {
+        console.error('Fetch brand failed:', fError.message);
+      }
+
+      if (existingBrand) {
+        brandId = existingBrand.id;
+      } else {
+        const { data: newBrand, error: iError } = await supabase
+          .from('brands')
+          .insert({ name: trimmedName })
+          .select()
+          .single();
+        if (iError) throw iError;
+        brandId = newBrand.id;
+      }
+
+      // 2. Link category to brand (select-before-insert for maximum safety)
+      const { data: existingLink, error: lFetchError } = await supabase
+        .from('category_brands')
+        .select('*')
+        .eq('category_id', category_id)
+        .eq('brand_id', brandId)
+        .maybeSingle();
+
+      if (lFetchError) {
+        console.error('Fetch category-brand link failed:', lFetchError.message);
+      }
+
+      if (!existingLink) {
+        const { error: linkError } = await supabase
+          .from('category_brands')
+          .insert({ category_id, brand_id: brandId });
+        if (linkError) throw linkError;
+      }
+
+      return res.status(201).json({ id: brandId, name: trimmedName });
+    }
+
+    // Mock fallback
+    const cat = DEFAULT_SETTINGS.categories.find(c => c.filterKey === category_id);
+    if (cat && !cat.brands.includes(trimmedName)) {
+      cat.brands.push(trimmedName);
+    }
+    res.status(201).json({ id: Date.now(), name: trimmedName });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/api/categories', async (req, res, next) => {
+  try {
+    const { title } = req.body;
+    if (!title) {
+      return res.status(400).json({ error: 'Missing category title' });
+    }
+    const trimmedTitle = title.trim();
+    const filterKey = trimmedTitle.toLowerCase().replace(/\s+/g, '_').replace(/[^a-z0-9_]/g, '');
+
+    const newCat = {
+      title: trimmedTitle,
+      emoji: '',
+      filterKey,
+      brands: []
+    };
+
+    let hasSupabase = !supabaseUrl.includes('your-supabase-project');
+
+    if (hasSupabase) {
+      // 1. Try to insert into categories table
+      try {
+        const { data: existingDbCat } = await supabase
+          .from('categories')
+          .select('*')
+          .eq('filter_key', filterKey)
+          .maybeSingle();
+
+        if (!existingDbCat) {
+          const { error: insErr } = await supabase.from('categories').insert({
+            title: trimmedTitle,
+            emoji: '',
+            filter_key: filterKey
+          });
+          if (insErr) console.error('Supabase categories insert failed:', insErr.message);
+        }
+      } catch (dbErr) {
+        console.error('Failed to insert into categories table:', dbErr.message || dbErr);
+      }
+
+      // 2. Keep website_settings in sync
+      const { data, error } = await supabase.from('website_settings').select('*');
+      let currentSettings = DEFAULT_SETTINGS;
+      if (!error && data && data.length > 0) {
+        currentSettings = data[0].config || DEFAULT_SETTINGS;
+      }
+      let existing = (currentSettings.categories || []).find(c => c.filterKey === filterKey);
+      if (!existing) {
+        const updatedCategories = [...(currentSettings.categories || []), newCat];
+        const updatedSettings = { ...currentSettings, categories: updatedCategories };
+        await supabase.from('website_settings').upsert({ id: 1, config: updatedSettings });
+      }
+    } else {
+      let existing = (DEFAULT_SETTINGS.categories || []).find(c => c.filterKey === filterKey);
+      if (!existing) {
+        DEFAULT_SETTINGS.categories.push(newCat);
+      }
+    }
+
+    res.status(201).json(newCat);
+  } catch (err) {
+    next(err);
+  }
 });
 
 // Settings CRUD
 app.get('/api/settings', async (req, res, next) => {
   try {
-    if (!supabaseUrl.includes('your-supabase-project')) {
+    let currentSettings = DEFAULT_SETTINGS;
+    let hasSupabase = !supabaseUrl.includes('your-supabase-project');
+
+    if (hasSupabase) {
       const { data, error } = await supabase.from('website_settings').select('*');
       if (!error && data && data.length > 0) {
-        return res.status(200).json(data[0].config || DEFAULT_SETTINGS);
+        currentSettings = data[0].config || DEFAULT_SETTINGS;
       }
-      if (error) console.error('Supabase fetch website_settings failed:', error.message || error);
+      if (error) {
+        console.error('Supabase fetch website_settings failed:', error.message || error);
+      }
+
+      // Try fetching categories from first-class categories table
+      try {
+        const { data: dbCategories, error: catError } = await supabase
+          .from('categories')
+          .select('*')
+          .order('id', { ascending: true });
+
+        if (!catError && dbCategories && dbCategories.length > 0) {
+          // Fetch all category-brand mappings with brand names
+          const { data: mappings, error: mapErr } = await supabase
+            .from('category_brands')
+            .select('category_id, brands ( name )');
+
+          const brandMap = {};
+          if (!mapErr && mappings) {
+            mappings.forEach(m => {
+              if (m.category_id && m.brands && m.brands.name) {
+                if (!brandMap[m.category_id]) {
+                  brandMap[m.category_id] = [];
+                }
+                if (!brandMap[m.category_id].includes(m.brands.name)) {
+                  brandMap[m.category_id].push(m.brands.name);
+                }
+              }
+            });
+          }
+
+          currentSettings.categories = dbCategories.map(c => ({
+            title: c.title,
+            emoji: c.emoji || '',
+            filterKey: c.filter_key,
+            brands: brandMap[c.filter_key] || []
+          }));
+        }
+      } catch (dbErr) {
+        // Table doesn't exist yet, fall back silently
+      }
     }
-    res.status(200).json(DEFAULT_SETTINGS);
+    res.status(200).json(currentSettings);
   } catch (err) {
     console.error('GET settings fallback error:', err);
     res.status(200).json(DEFAULT_SETTINGS);

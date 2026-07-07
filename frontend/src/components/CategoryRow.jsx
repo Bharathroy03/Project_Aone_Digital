@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import ProductCard from './ProductCard';
 
 // ─── Brand pill color map ────────────────────────────────────────────────────
 const BRAND_COLORS = {
@@ -112,78 +113,6 @@ export function getBrandLogo(brandName) {
   );
 }
 
-// ─── Tiny product card for horizontal row ────────────────────────────────────
-export function RowProductCard({ product, onAddToCart, isAdded, isAdmin, onEdit, onDelete }) {
-  const bStyle = brandStyle(product.brand || '');
-  return (
-    <div className="cat-product-card group relative">
-      {/* Admin overlay */}
-      {isAdmin && (
-        <div className="cat-admin-overlay">
-          <button
-            className="cat-admin-btn edit"
-            onClick={(e) => { e.stopPropagation(); onEdit(product); }}
-            title="Edit product"
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>edit</span>
-          </button>
-          <button
-            className="cat-admin-btn delete"
-            onClick={(e) => { e.stopPropagation(); onDelete(product.id); }}
-            title="Delete product"
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>delete</span>
-          </button>
-        </div>
-      )}
-
-      {/* Product image */}
-      <div className="cat-card-img-wrap">
-        <div 
-          className="cat-card-badge"
-          style={{ 
-            backgroundColor: bStyle.bg,
-            border: `1px solid ${bStyle.text}20`,
-            padding: '4px 10px',
-            borderRadius: '99px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          {getBrandLogo(product.brand)}
-        </div>
-        <img
-          src={product.image_url}
-          alt={product.name}
-          className="cat-card-img"
-          onError={(e) => {
-            e.target.src = 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=300&q=60';
-          }}
-        />
-      </div>
-
-      {/* Info */}
-      <div className="cat-card-body">
-        {/* Clean layout: Brand logo is on image badge; show name & price footer */}
-        <h5 className="cat-card-name" style={{ marginTop: '4px' }}>{product.name}</h5>
-        <div className="cat-card-footer">
-          <span className="cat-card-price">₹{product.price.toLocaleString('en-IN')}</span>
-          <button
-            className={`cat-card-btn ${isAdded ? 'added' : ''}`}
-            onClick={() => onAddToCart(product)}
-            aria-label="Add to cart"
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: '15px' }}>
-              {isAdded ? 'done' : 'add_shopping_cart'}
-            </span>
-            {isAdded ? 'Added' : 'Add'}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // ─── Main CategoryRow ─────────────────────────────────────────────────────────
 export default function CategoryRow({
@@ -199,12 +128,23 @@ export default function CategoryRow({
   onEdit,
   onDelete,
   onViewAll,
+  onUpdateQuantity,
+  wishlist = [],
+  onToggleWishlist,
 }) {
   const trackRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
 
-  const filtered = products.filter((p) => p.category === filterKey);
+  // Brand filter state
+  const [activeBrandFilter, setActiveBrandFilter] = useState('All');
+
+  // Filter products by category and active brand filter
+  const filtered = products
+    .filter((p) => p.category === filterKey)
+    .filter((p) => activeBrandFilter === 'All' || p.brand?.toLowerCase() === activeBrandFilter.toLowerCase());
+
+  const displayedProducts = filtered.slice(0, 4);
 
   const updateScrollState = () => {
     const el = trackRef.current;
@@ -225,7 +165,7 @@ export default function CategoryRow({
       {/* Row header */}
       <div className="cat-row-header">
         <div className="cat-row-title-group">
-          <span className="cat-row-emoji">{emoji}</span>
+          {emoji && <span className="cat-row-emoji">{emoji}</span>}
           <h3 className="cat-row-title">{title}</h3>
           {/* Brand pills */}
           <div className="cat-brand-pills">
@@ -266,11 +206,54 @@ export default function CategoryRow({
             className="cat-view-all-btn"
             onClick={() => onViewAll(filterKey)}
           >
-            View All
+            Explore All
             <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>arrow_forward</span>
           </button>
         </div>
       </div>
+
+      {/* Brand logo carousel under category heading */}
+      {brands && brands.length > 0 && (
+        <div className="flex items-center gap-2 overflow-x-auto py-2.5 px-1 mb-4 hide-scrollbar w-full">
+          <button
+            onClick={() => {
+              setActiveBrandFilter('All');
+              setTimeout(updateScrollState, 100);
+            }}
+            className={`flex items-center justify-center px-4 py-2 border rounded-xl bg-white hover:shadow-md transition-all cursor-pointer select-none h-10 flex-shrink-0 text-xs font-bold ${
+              activeBrandFilter === 'All'
+                ? 'border-secondary bg-secondary/5 text-secondary font-extrabold shadow-sm'
+                : 'border-slate-200/60 text-slate-600 hover:border-slate-350'
+            }`}
+          >
+            All Brands
+          </button>
+          {brands.map((b) => {
+            const isActive = activeBrandFilter.toLowerCase() === b.toLowerCase();
+            const s = brandStyle(b);
+            return (
+              <button
+                key={b}
+                onClick={() => {
+                  setActiveBrandFilter(isActive ? 'All' : b);
+                  setTimeout(updateScrollState, 100);
+                }}
+                className={`flex items-center justify-center px-4 py-2 border rounded-xl bg-white hover:shadow-md transition-all cursor-pointer select-none h-10 flex-shrink-0 ${
+                  isActive
+                    ? 'border-secondary bg-secondary/5 font-extrabold shadow-sm'
+                    : 'border-slate-200/60 text-slate-650 hover:border-slate-350'
+                }`}
+              >
+                {getBrandLogo(b) || (
+                  <span style={{ color: s.text, fontSize: '10px', fontWeight: 'bold', letterSpacing: '0.04em', textTransform: 'uppercase' }}>
+                    {b}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {/* Scroll track */}
       <div
@@ -280,7 +263,7 @@ export default function CategoryRow({
       >
         {loading ? (
           // Skeleton placeholders
-          Array.from({ length: 5 }).map((_, i) => (
+          Array.from({ length: 4 }).map((_, i) => (
             <div key={i} className="cat-card-skeleton" />
           ))
         ) : filtered.length === 0 ? (
@@ -289,17 +272,42 @@ export default function CategoryRow({
             <p>No {title} in stock yet.</p>
           </div>
         ) : (
-          filtered.map((product) => (
-            <RowProductCard
-              key={product.id}
-              product={product}
-              onAddToCart={onAddToCart}
-              isAdded={cart.some((i) => i.id === product.id)}
-              isAdmin={isAdmin}
-              onEdit={onEdit}
-              onDelete={onDelete}
-            />
-          ))
+          <>
+            {displayedProducts.map((product) => {
+              const cartQuantity = cart.find((item) => item.id === product.id)?.quantity || 0;
+              const isWishlisted = wishlist.includes(product.id);
+              return (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={onAddToCart}
+                  cartQuantity={cartQuantity}
+                  onUpdateQuantity={onUpdateQuantity}
+                  isWishlisted={isWishlisted}
+                  onToggleWishlist={onToggleWishlist}
+                  isAdmin={isAdmin}
+                  onEdit={onEdit}
+                  onDelete={onDelete}
+                />
+              );
+            })}
+
+            {filtered.length > 4 && (
+              <div
+                onClick={() => onViewAll(filterKey)}
+                className="redesigned-product-card style-light hover:shadow-xl hover:-translate-y-2 flex items-center justify-center flex-col p-6 text-center cursor-pointer min-h-[300px] border border-dashed border-secondary/20 bg-secondary/[0.01] flex-shrink-0"
+                style={{ minWidth: '240px' }}
+              >
+                <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center text-secondary mb-4">
+                  <span className="material-symbols-outlined text-xl">arrow_forward</span>
+                </div>
+                <h4 className="text-xs font-bold text-slate-800">Explore All</h4>
+                <p className="text-[10px] text-slate-400 mt-1 max-w-[150px] leading-relaxed">
+                  View all {filtered.length} products in this category.
+                </p>
+              </div>
+            )}
+          </>
         )}
       </div>
     </section>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
 // ─── Hero Slider ──────────────────────────────────────────────────────────────
-function HeroSlider({ banners }) {
+export function HeroSlider({ banners }) {
   const [current, setCurrent] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -133,11 +133,12 @@ function SquareGrid({ banners }) {
 
 // ─── Main BannerSection ───────────────────────────────────────────────────────
 export default function BannerSection({ banners = [], loading = false }) {
-  const heroBanners   = banners.filter(b => b.type === 'hero');
-  const wideBanners   = banners.filter(b => b.type === 'wide');
-  const squareBanners = banners.filter(b => b.type === 'square');
+  const wideBanners   = banners.filter(b => b.type === 'wide' && b.enabled);
+  const squareBanners = banners.filter(b => b.type === 'square' && b.enabled);
 
-  const hasBanners = heroBanners.length || wideBanners.length || squareBanners.length;
+  const hasBanners = wideBanners.length || squareBanners.length;
+
+  if (!hasBanners && !loading) return null;
 
   return (
     <section className="banner-section" id="banners">
@@ -160,16 +161,8 @@ export default function BannerSection({ banners = [], loading = false }) {
             <div className="banner-skeleton square" />
           </div>
         </div>
-      ) : !hasBanners ? (
-        <div className="banner-empty">
-          <span className="material-symbols-outlined" style={{ fontSize: '48px', color: '#94a3b8' }}>image_not_supported</span>
-          <p>No active promotions right now. Check back soon!</p>
-        </div>
       ) : (
         <div className="banner-content-stack">
-          {/* 1. Hero Slider */}
-          {heroBanners.length > 0 && <HeroSlider banners={heroBanners} />}
-
           {/* 2. Wide Promo Strip */}
           {wideBanners.length > 0 && <WidePromoStrip banners={wideBanners} />}
 

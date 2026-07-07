@@ -115,21 +115,23 @@ export default function Hero({ onExploreClick, settings }) {
           </div>
 
           {/* Headline */}
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight text-primary mb-5 leading-tight">
-            {settings?.hero?.title || 'Smart Tech.'}{' '}
-            <span className="text-secondary font-semibold">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-medium tracking-tight text-primary mb-5 leading-tight overflow-hidden">
+            <span className="inline-block animate-hero-text" style={{ animationDelay: '0.1s', opacity: 0 }}>
+              {settings?.hero?.title || 'Smart Tech.'}
+            </span>{' '}
+            <span className="inline-block text-secondary font-semibold animate-hero-text" style={{ animationDelay: '0.3s', opacity: 0 }}>
               {settings?.hero?.highlight || 'Modern Living.'}
             </span>
           </h1>
 
           {/* Subtext */}
-          <p className="text-base md:text-lg text-text-secondary mb-8 max-w-lg leading-relaxed">
+          <p className="text-base md:text-lg text-text-secondary mb-8 max-w-lg leading-relaxed animate-hero-text" style={{ animationDelay: '0.5s', opacity: 0 }}>
             {settings?.hero?.subtitle ||
               'Curated smartphones and premium smart appliances designed to elevate your home.'}
           </p>
 
           {/* CTAs */}
-          <div className="flex flex-col sm:flex-row gap-4 font-bold" style={{ fontFamily: 'var(--font-body)' }}>
+          <div className="flex flex-col sm:flex-row gap-4 font-bold animate-hero-text" style={{ fontFamily: 'var(--font-body)', animationDelay: '0.7s', opacity: 0 }}>
             <button
               className="px-8 py-4 bg-gradient-to-r from-secondary to-secondary-container text-white rounded-xl shadow-lg hover:shadow-secondary/20 transition-all text-center cursor-pointer font-bold"
               onClick={onExploreClick}

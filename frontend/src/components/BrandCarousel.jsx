@@ -6,12 +6,20 @@ const FALLBACK_BRANDS = [
   { slug: 'samsung',   name: 'Samsung',   bg: '#E8EDFF', iconColor: '1428A0' },
   { slug: 'sony',      name: 'Sony',      bg: '#F0F0F0', iconColor: '000000' },
   { slug: 'lg',        name: 'LG',        bg: '#FFF0F3', iconColor: 'A50034' },
-  { slug: 'vivo',      name: 'Vivo',      bg: '#EEF0FF', iconColor: '415FFF' },
-  { slug: 'whirlpool', name: 'Whirlpool', bg: '#EAF0FF', iconColor: '003087' },
-  { slug: 'dyson',     name: 'Dyson',     bg: '#FFF0F0', iconColor: 'C41230' },
   { slug: 'oneplus',   name: 'OnePlus',   bg: '#FFF1F1', iconColor: 'F5010C' },
+  { slug: 'vivo',      name: 'Vivo',      bg: '#EEF0FF', iconColor: '415FFF' },
+  { slug: 'oppo',      name: 'Oppo',      bg: '#EAF9F3', iconColor: '008A54' },
+  { slug: 'realme',    name: 'Realme',    bg: '#FFFBEB', iconColor: 'F6C309' },
   { slug: 'xiaomi',    name: 'Xiaomi',    bg: '#FFF5EC', iconColor: 'FF6900' },
+  { slug: 'hp',        name: 'HP',        bg: '#E8F5FC', iconColor: '0096D6' },
+  { slug: 'dell',      name: 'Dell',      bg: '#E6F3FB', iconColor: '007DB8' },
+  { slug: 'asus',      name: 'ASUS',      bg: '#EBF1F7', iconColor: '00539B' },
+  { slug: 'lenovo',    name: 'Lenovo',    bg: '#FEECEB', iconColor: 'E2231A' },
+  { slug: 'acer',      name: 'Acer',      bg: '#F3F9EA', iconColor: '83B81A' },
+  { slug: 'whirlpool', name: 'Whirlpool', bg: '#EAF0FF', iconColor: '003087' },
   { slug: 'bosch',     name: 'Bosch',     bg: '#EAF5FF', iconColor: '007BC0' },
+  { slug: 'philips',   name: 'Philips',   bg: '#EAF2F7', iconColor: '0B5A8C' },
+  { slug: 'dyson',     name: 'Dyson',     bg: '#FFF0F0', iconColor: '2A2A2A' },
 ];
 
 // ─── Single brand circle tile ─────────────────────────────────────────────────
