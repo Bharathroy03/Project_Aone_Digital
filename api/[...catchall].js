@@ -531,6 +531,35 @@ app.post('/api/categories', async (req, res, next) => {
   }
 });
 
+app.delete('/api/categories/:filterKey', async (req, res, next) => {
+  try {
+    const { filterKey } = req.params;
+    let hasSupabase = !supabaseUrl.includes('your-supabase-project');
+
+    if (hasSupabase) {
+      // 1. Delete from categories table
+      const { error: delErr } = await supabase.from('categories').delete().eq('filter_key', filterKey);
+      if (delErr) console.error('Supabase categories delete failed:', delErr.message);
+
+      // 2. Keep website_settings in sync
+      const { data, error } = await supabase.from('website_settings').select('*');
+      let currentSettings = DEFAULT_SETTINGS;
+      if (!error && data && data.length > 0) {
+        currentSettings = data[0].config || DEFAULT_SETTINGS;
+      }
+      const updatedCategories = (currentSettings.categories || []).filter(c => c.filterKey !== filterKey);
+      const updatedSettings = { ...currentSettings, categories: updatedCategories };
+      await supabase.from('website_settings').upsert({ id: 1, config: updatedSettings });
+    } else {
+      DEFAULT_SETTINGS.categories = (DEFAULT_SETTINGS.categories || []).filter(c => c.filterKey !== filterKey);
+    }
+
+    res.status(200).json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Settings CRUD
 app.get('/api/settings', async (req, res, next) => {
   try {

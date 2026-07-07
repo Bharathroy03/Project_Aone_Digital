@@ -2312,22 +2312,22 @@ export default function App() {
           <BannerSection banners={banners} loading={bannersLoading} />
 
           {/* Featured Offers Section */}
-          <section className="bg-primary-container py-section-gap relative overflow-hidden" id="offers">
+          <section className="bg-primary-container py-12 md:py-section-gap relative overflow-hidden" id="offers">
             <div className="absolute top-0 right-0 w-96 h-96 bg-secondary/10 blur-[120px] rounded-full parallax-float-up"></div>
             <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop relative z-10">
-              <div className="text-center mb-16 reveal">
-                <h2 className="font-headline-md text-white mb-4">{settings.offers_section_title || 'Exclusive Retail Offers'}</h2>
-                <p className="text-on-primary-container font-ui-label-md">{settings.offers_section_subtitle || 'Maximum benefits on every purchase you make at Aone Digital.'}</p>
+              <div className="text-center mb-8 md:mb-16 reveal">
+                <h2 className="font-headline-md text-white text-xl md:text-[30px] mb-3 md:mb-4">{settings.offers_section_title || 'Exclusive Retail Offers'}</h2>
+                <p className="text-on-primary-container font-ui-label-md text-sm md:text-base">{settings.offers_section_subtitle || 'Maximum benefits on every purchase you make at Aone Digital.'}</p>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
                 {(settings.offers || [
                   { icon: 'credit_card', title: 'No Cost EMI', desc: 'Pay over 6-24 months with absolutely 0% interest on major credit cards.' },
                   { icon: 'currency_exchange', title: 'Exchange Bonus', desc: 'Get up to ₹15,000 extra value when you trade in your old devices.' },
                   { icon: 'payments', title: 'Instant Cashback', desc: 'Avail up to 10% instant discount on HDFC, ICICI, and SBI bank cards.' },
                   { icon: 'school', title: 'Student Offers', desc: 'Extra 5% discount for students on Laptops and Tablets with valid ID.' }
                 ]).map((offer, idx) => (
-                  <div key={idx} className="p-8 bg-white/5 border border-white/10 rounded-[32px] hover:bg-white/10 transition-all group reveal animate-all duration-300" style={{ transitionDelay: `${idx * 100}ms` }}>
-                    <span className="material-symbols-outlined text-4xl text-secondary mb-6 block group-hover:scale-110 transition-transform">{offer.icon}</span>
+                  <div key={idx} className="p-5 md:p-8 bg-white/5 border border-white/10 rounded-[24px] md:rounded-[32px] hover:bg-white/10 transition-all group reveal animate-all duration-300" style={{ transitionDelay: `${idx * 100}ms` }}>
+                    <span className="material-symbols-outlined text-3xl md:text-4xl text-secondary mb-3 md:mb-6 block group-hover:scale-110 transition-transform">{offer.icon}</span>
                     <h4 className="text-white font-title-sm mb-2">{offer.title}</h4>
                     <p className="text-on-primary-container text-ui-label-md text-sm">{offer.desc}</p>
                   </div>
@@ -2339,10 +2339,10 @@ export default function App() {
 
 
           {/* Why Choose Us Section */}
-          <section className="py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-section-gap items-center">
+          <section className="py-12 md:py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 md:gap-section-gap items-center">
               <div className="reveal">
-                <h2 className="font-headline-md text-on-surface mb-8">{settings?.about?.title || 'Redefining the Electronics Shopping Experience'}</h2>
+                <h2 className="font-headline-md text-on-surface text-xl md:text-[30px] mb-6 md:mb-8">{settings?.about?.title || 'Redefining the Electronics Shopping Experience'}</h2>
                 <div className="space-y-8">
                   {[
                     { icon: 'workspace_premium', title: 'Authorized Retailer', desc: 'We are certified partners for Apple, Samsung, Sony, and LG, ensuring genuine products every time.' },
@@ -2386,9 +2386,9 @@ export default function App() {
 
 
           {/* Testimonials Success Stories */}
-          <section className="bg-surface-container py-16 overflow-hidden">
-            <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop text-center mb-8 reveal animate-fade-in">
-              <h2 className="font-headline-md text-on-surface mb-2">Customer Success Stories</h2>
+          <section className="bg-surface-container py-10 md:py-16 overflow-hidden">
+            <div className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop text-center mb-6 md:mb-8 reveal animate-fade-in">
+              <h2 className="font-headline-md text-on-surface text-xl md:text-[30px] mb-2">Customer Success Stories</h2>
               <div className="flex justify-center gap-1">
                 {[...Array(5)].map((_, i) => (
                   <span key={i} className="material-symbols-outlined text-status-success" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
@@ -2418,15 +2418,15 @@ export default function App() {
 
 
           {/* Inquiry Form Section */}
-          <section className="py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto" id="contact">
-            <div className="glass p-8 md:p-16 rounded-[48px] shadow-2xl relative overflow-hidden reveal animate-fade-in">
+          <section className="py-10 md:py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto" id="contact">
+            <div className="glass p-5 sm:p-8 md:p-16 rounded-3xl md:rounded-[48px] shadow-2xl relative overflow-hidden reveal animate-fade-in">
               {/* Floating Parallax Spheres */}
               <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-secondary/5 blur-[80px] rounded-full parallax-float-up pointer-events-none z-0"></div>
               <div className="absolute -top-20 -right-20 w-80 h-80 bg-primary/5 blur-[80px] rounded-full parallax-float-down pointer-events-none z-0"></div>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 relative z-10">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 relative z-10">
                 <div>
-                  <h2 className="font-headline-md text-on-surface mb-6">Plan Your Next Upgrade</h2>
-                  <p className="text-body-lg text-text-secondary mb-10">Fill out the form and our specialist from Aone Digital will reach out to you with personalized offers.</p>
+                  <h2 className="font-headline-md text-on-surface text-xl md:text-[30px] mb-4 md:mb-6">Plan Your Next Upgrade</h2>
+                  <p className="text-body-lg text-text-secondary text-sm md:text-lg mb-6 md:mb-10">Fill out the form and our specialist from Aone Digital will reach out to you with personalized offers.</p>
                   <div className="space-y-6">
                     <div className="flex items-center gap-4">
                       <span className="material-symbols-outlined text-secondary">call</span>
@@ -2525,11 +2525,11 @@ export default function App() {
           </section>
 
           {/* FAQ Accordion Section */}
-          <section className="py-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto bg-white rounded-[64px] mb-section-gap">
-            <div className="text-center mb-16 reveal active">
-              <h2 className="font-headline-md text-on-surface mb-4">Frequently Asked Questions</h2>
+          <section className="py-10 md:py-section-gap px-4 md:px-0 max-w-[calc(100%-2rem)] md:max-w-container-max mx-auto bg-white rounded-3xl md:rounded-[64px] mb-10 md:mb-section-gap">
+            <div className="text-center mb-8 md:mb-16 reveal active">
+              <h2 className="font-headline-md text-on-surface text-xl md:text-[30px] mb-3 md:mb-4">Frequently Asked Questions</h2>
             </div>
-            <div className="max-w-3xl mx-auto space-y-4 px-margin-mobile">
+            <div className="max-w-3xl mx-auto space-y-3 md:space-y-4 px-0 md:px-margin-mobile">
               {(settings.faqs || [
                 { q: 'What documents are needed for No-Cost EMI?', a: 'For credit card EMI, no documents are needed. For paper-based finance (Bajaj Finserv/HDFC), you will need your Aadhaar card, PAN card, and a cancelled cheque.' },
                 { q: 'How long does the delivery and installation take?', a: 'Standard delivery from Aone Digital is within 24 hours for in-stock products. Professional installation for appliances is scheduled within 48 hours of delivery.' }
@@ -2584,7 +2584,7 @@ export default function App() {
         const uniqueCategoryBrands = ['All', ...(activeCat.brands?.length ? activeCat.brands : [...new Set(products.filter(p => p.category === selectedCategoryKey).map(p => p.brand))].filter(Boolean))];
 
         return (
-          <section className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop my-28 min-h-[60vh] flex flex-col gap-8 w-full animate-fade-in">
+          <section className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop my-16 md:my-28 min-h-[60vh] flex flex-col gap-5 md:gap-8 w-full animate-fade-in">
             {/* Breadcrumbs */}
             <div className="flex items-center gap-2 text-xs text-text-secondary font-medium">
               <span className="hover:text-secondary cursor-pointer" onClick={() => setView('home')}>Home</span>
@@ -4274,11 +4274,20 @@ export default function App() {
                                           onClick={(e) => {
                                             e.stopPropagation();
                                             showConfirm(
-                                              "Are you sure you want to delete this category? This may affect linked brands and products.",
+                                              "Are you sure you want to delete this category? This will permanently delete it from the database.",
                                               () => {
-                                                const updatedCats = (settings.categories || []).filter(c => c.filterKey !== cat.filterKey);
-                                                setSettings({ ...settings, categories: updatedCats });
-                                                showToast(`Category "${cat.title}" removed. Save settings to apply live.`, 'info');
+                                                fetch(`/api/categories/${cat.filterKey}`, {
+                                                  method: 'DELETE'
+                                                })
+                                                  .then(handleFetchResponse)
+                                                  .then(() => {
+                                                    const updatedCats = (settings.categories || []).filter(c => c.filterKey !== cat.filterKey);
+                                                    setSettings({ ...settings, categories: updatedCats });
+                                                    showToast(`Category "${cat.title}" has been successfully deleted from the database.`, 'success');
+                                                  })
+                                                  .catch((err) => {
+                                                    showToast(`Failed to delete category: ${err.message}`, 'error');
+                                                  });
                                               }
                                             );
                                           }}
@@ -7130,8 +7139,8 @@ export default function App() {
 
       {/* Global footer */}
       {showMainNavbar && (
-        <footer className="bg-primary-container dark:bg-surface-container-lowest w-full pt-section-gap pb-8 mt-auto border-t border-white/10">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto text-on-primary-container font-body-md text-body-md text-sm">
+        <footer className="bg-primary-container dark:bg-surface-container-lowest w-full pt-12 md:pt-section-gap pb-8 mt-auto border-t border-white/10">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-gutter px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto text-on-primary-container font-body-md text-body-md text-sm">
             <div className="space-y-6">
               <span className="font-headline-md text-headline-md text-on-primary block select-none">Aone Digital</span>
               <p className="max-w-xs text-on-primary-container/80 leading-relaxed">
@@ -7217,7 +7226,7 @@ export default function App() {
               )}
             </div>
           </div>
-          <div className="mt-20 pt-8 border-t border-white/10 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto text-center">
+          <div className="mt-8 md:mt-20 pt-8 border-t border-white/10 px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto text-center">
             <div className="space-y-2 text-xs">
               <p className="text-ui-caption text-on-primary-container/60">
                 <a 
